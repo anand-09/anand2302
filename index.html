@@ -1,0 +1,1764 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5f7fa">
+<meta name="description" content="Anand Singh, PhD student at Institute of Science Tokyo. I build robots and AI that stay safe in the real world: hospitals, warehouses, and camera-based AI.">
+<title>Anand Singh | Safe Learning and Control</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%232346a8' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%2313233f'/%3E%3Ccircle cx='27' cy='16' r='3.5' fill='%23e9a92c'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f5f7fa;
+    --white: #ffffff;
+    --ink: #13233f;
+    --muted: #546074;
+    --line: #dbe0e8;
+    --accent: #2346a8;
+    --accent-soft: #e7ecfb;
+    --amber: #e9a92c;
+    --amber-soft: #fdf3dd;
+    --green: #1f7a52;
+    --green-soft: #e2f3ea;
+    --dark: #13233f;
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 1rem/1.65 var(--sans); }
+  a { color: var(--accent); text-underline-offset: .22em; }
+  a:hover { text-decoration-thickness: .15em; }
+  :focus-visible { outline: 3px solid #5575d2; outline-offset: 3px; border-radius: .2rem; }
+  h1, h2, h3, h4, p, figure, dl, dd { margin: 0; }
+  h1, h2 { font-family: var(--serif); font-weight: 600; letter-spacing: -.025em; line-height: 1.05; }
+  h3, h4 { line-height: 1.35; }
+  .wrap { width: min(72rem, calc(100% - 3rem)); margin-inline: auto; }
+  .skip { position: absolute; z-index: 20; top: .5rem; left: .5rem; padding: .5rem 1rem; background: white; transform: translateY(-170%); }
+  .skip:focus { transform: none; }
+
+  /* Header */
+  header { position: sticky; top: 0; z-index: 10; background: #ffffffe6; backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  .header-inner { display: flex; align-items: center; justify-content: space-between; gap: .5rem 2rem; flex-wrap: wrap; padding-block: .8rem; }
+  .wordmark { display: inline-flex; align-items: center; gap: .55rem; font-weight: 700; color: var(--ink); text-decoration: none; white-space: nowrap; }
+  .wordmark svg { width: 1.5rem; height: 1.5rem; }
+  nav { display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; }
+  nav a { font-size: .92rem; color: var(--muted); text-decoration: none; padding-block: .2rem; }
+  nav a:hover { color: var(--accent); }
+
+  /* Hero */
+  .hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: center; gap: 2rem 3rem; padding-block: clamp(2.5rem, 6vw, 5rem) clamp(2rem, 4vw, 3rem); }
+  .intro-id { display: flex; align-items: center; gap: clamp(1rem, 2.5vw, 1.6rem); margin-bottom: .4rem; }
+  .avatar-ring { flex: none; display: block; padding: 4px; border-radius: 50%; background: var(--accent); box-shadow: 0 14px 30px #13233f2e; }
+  .avatar { display: block; width: clamp(7.5rem, 13vw, 10.5rem); height: auto; aspect-ratio: 1; border-radius: 50%; object-fit: cover; border: 4px solid var(--paper); }
+  .intro-id .role { margin-bottom: 0; }
+  .intro-id h1 { font-size: clamp(2.6rem, 5.4vw, 4.6rem); white-space: nowrap; }
+  .intro-id { margin-bottom: 1.1rem; }
+  @media (max-width: 30rem) { .intro-id { flex-direction: column; align-items: flex-start; } }
+  .role { color: var(--accent); font-weight: 600; font-size: 1.1rem; margin-bottom: 1rem; }
+  h1 { font-size: clamp(3.4rem, 8vw, 6.4rem); margin-block: 0 .45rem; }
+  .lead { font-size: clamp(1.35rem, 2.6vw, 1.75rem); line-height: 1.3; font-weight: 600; max-width: 26ch; }
+  .journey { display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; padding: 0; margin: 1.3rem 0 0; }
+  .journey li { display: inline-flex; align-items: center; gap: .5rem; padding: .3rem .8rem .3rem .35rem; border: 1px solid var(--line); border-radius: 99rem; background: var(--white); font-size: .88rem; font-weight: 600; }
+  .journey span { padding: .05rem .55rem; border-radius: 99rem; background: var(--accent-soft); color: var(--accent); font-size: .76rem; }
+  .journey .now span { background: var(--amber); color: var(--ink); }
+  .sublead { margin-top: .8rem; color: var(--muted); font-size: 1.05rem; max-width: 52ch; }
+  .links { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; margin-top: 1.5rem; }
+  .button { display: inline-flex; align-items: center; gap: .45rem; min-height: 2.6rem; border: 1px solid var(--accent); border-radius: .45rem; padding: .4rem .95rem; font: 600 .93rem/1.3 var(--sans); text-decoration: none; color: var(--accent); background: var(--white); cursor: pointer; }
+  .button:hover { background: var(--accent-soft); }
+  .button svg { width: 1.05rem; height: 1.05rem; flex: none; }
+  .primary { background: var(--accent); color: white; }
+  .primary:hover { background: #1b3784; }
+
+  /* Hero orbit */
+  .orbit-figure { position: relative; max-width: 26rem; justify-self: center; width: 100%; }
+  .orbit-stage { position: relative; }
+  .orbit-stage canvas { display: block; width: 100%; aspect-ratio: 1; }
+  .orbit-readout { position: absolute; right: .2rem; bottom: .4rem; padding: .25rem .65rem; border-radius: 99rem; background: var(--white); border: 1px solid var(--line); box-shadow: 0 4px 14px #13233f14; font-size: .82rem; color: var(--muted); }
+  .orbit-readout output { font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .orbit-figure figcaption { margin-top: .7rem; font-size: .86rem; color: var(--muted); text-align: center; }
+  .orbit-phase { position: absolute; left: .2rem; top: .4rem; display: inline-flex; align-items: center; gap: .4rem; padding: .25rem .7rem; border-radius: 99rem; background: var(--ink); color: white; font-size: .8rem; font-weight: 600; }
+  .orbit-phase::before { content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: var(--amber); }
+  .orbit-phase.done::before { background: #4fd18b; }
+  .orbit-player { margin-top: .7rem; padding: .7rem .8rem .75rem; background: var(--white); border: 1px solid var(--line); border-radius: .9rem; box-shadow: 0 6px 18px #13233f0f; }
+  .o-row { display: flex; align-items: center; gap: .4rem; }
+  .o-btn { display: inline-grid; place-items: center; width: 2.3rem; height: 2.3rem; border: 1px solid var(--line); border-radius: 50%; background: var(--paper); color: var(--ink); cursor: pointer; }
+  .o-btn:hover { background: var(--accent-soft); color: var(--accent); }
+  .o-btn svg { width: 1.05rem; height: 1.05rem; }
+  .o-main { width: 2.8rem; height: 2.8rem; background: var(--accent); border-color: var(--accent); color: white; }
+  .o-main:hover { background: #1b3784; color: white; }
+  .o-time { margin-left: auto; font-weight: 700; font-variant-numeric: tabular-nums; font-size: .92rem; }
+  .o-scrub { width: 100%; margin: .65rem 0 .5rem; height: 6px; border-radius: 99rem; appearance: none; -webkit-appearance: none; background: linear-gradient(90deg, var(--amber) var(--p, 0%), #dbe0e8 var(--p, 0%)); cursor: pointer; }
+  .o-scrub::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--ink); border: 3px solid white; box-shadow: 0 1px 4px #13233f55; }
+  .o-scrub::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 3px solid white; }
+  .o-speed { display: flex; align-items: center; gap: .35rem; font-size: .82rem; color: var(--muted); }
+  .o-speed span { margin-right: .2rem; }
+  .o-speed button { min-height: 1.9rem; padding: 0 .65rem; border: 1px solid var(--line); border-radius: 99rem; background: var(--white); font: 600 .8rem var(--sans); color: var(--ink); cursor: pointer; }
+  .o-speed button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: white; }
+  .orbit-key { display: flex; flex-wrap: wrap; justify-content: center; gap: .2rem 1rem; list-style: none; padding: 0; margin: 0 0 .35rem; font-size: .8rem; }
+  .orbit-key li { display: inline-flex; align-items: center; gap: .35rem; }
+  .orbit-key li::before { content: ""; width: 1rem; border-top: 2px solid var(--c); }
+  .orbit-key .dash::before { border-top-style: dashed; }
+
+  /* Fleet videos */
+  .fleet { background: var(--dark); color: #dfe6f7; border-radius: 1rem; padding: clamp(1rem, 3vw, 1.6rem); margin-bottom: clamp(2rem, 5vw, 3.5rem); }
+  .fleet-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .3rem 1rem; margin-bottom: 1rem; }
+  .fleet h2 { color: white; font-size: clamp(1.5rem, 3vw, 2rem); }
+  .fleet-head p { color: #b9c6e6; font-size: .95rem; }
+  .fleet-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; }
+  .fleet details { border-top: 1px solid #3c5180; }
+  .fleet summary { cursor: pointer; padding: .7rem .1rem; color: white; font-weight: 600; }
+  .fleet summary::marker { color: var(--amber); }
+  .fleet video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #071124; border-radius: .5rem; }
+  .fleet figcaption { padding: .55rem .1rem 0; font-size: .92rem; }
+  .fleet figcaption a, .fleet :focus-visible { color: #c9d6ff; outline-color: #aabfff; }
+  .fleet details:target { outline: 2px solid var(--amber); outline-offset: 4px; border-radius: .3rem; }
+
+  /* Sections */
+  .section { display: grid; grid-template-columns: minmax(11rem, .7fr) minmax(0, 2fr); gap: 1.2rem 3rem; padding-block: clamp(2.5rem, 6vw, 4.5rem); border-top: 1px solid var(--line); }
+  .section h2 { font-size: clamp(2.2rem, 4.5vw, 3.3rem); }
+  .section-note { margin-top: .6rem; color: var(--muted); font-size: .95rem; max-width: 22ch; }
+  .prose p { color: var(--muted); font-size: 1.06rem; max-width: 65ch; }
+  .prose p + p { margin-top: .8rem; }
+  .prose strong { color: var(--ink); font-weight: 600; }
+
+  .r-list { display: grid; }
+  .r-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 1.6rem 2.2rem; align-items: start; padding-block: 1.8rem; border-top: 1px solid var(--line); }
+  .r-tags { display: flex; flex-wrap: wrap; gap: .4rem; list-style: none; padding: 0; margin: .8rem 0 0; }
+  .r-tags li { padding: .15rem .65rem; border-radius: 99rem; background: var(--accent-soft); color: var(--accent); font-size: .82rem; font-weight: 600; }
+  .r-list > .r-row:first-child { border-top: 0; padding-top: 0; }
+  .r-media { position: relative; overflow: hidden; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: .9rem; background: var(--white); box-shadow: 0 8px 22px #13233f12; }
+  .r-media > video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #070b14; }
+  .r-media canvas, .r-media > img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
+  .r-dark { aspect-ratio: auto; background: #1b2a45; border-color: #1b2a45; padding: .6rem; }
+  .r-pair { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+  .r-pair figure { position: relative; }
+  .r-pair video { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: .5rem; background: #0e1830; }
+  .r-pair figcaption { position: absolute; left: .45rem; top: .45rem; display: inline-flex; align-items: center; gap: .35rem; padding: .12rem .55rem; border-radius: 99rem; background: #13233fd9; color: white; font-size: .75rem; font-weight: 600; }
+  .dot { width: .5rem; height: .5rem; border-radius: 50%; }
+  .dot.ok { background: #4fd18b; } .dot.bad { background: #ff6b5a; }
+  .r-tabs { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .55rem; }
+  .r-tabs button { flex: 1; min-height: 2.1rem; border: 1px solid #3c5180; border-radius: .45rem; background: transparent; color: #c9d4f6; font: 600 .85rem var(--sans); cursor: pointer; }
+  .r-tabs button:hover { background: #26385c; }
+  .r-tabs button[aria-pressed="true"] { background: var(--amber); border-color: var(--amber); color: var(--ink); }
+  .r-dark :focus-visible { outline-color: #aabfff; }
+  .r-text h3 { font-family: var(--serif); font-weight: 600; font-size: clamp(1.35rem, 2.2vw, 1.65rem); line-height: 1.2; letter-spacing: -.01em; }
+  .r-text > p { margin-top: .6rem; color: var(--muted); font-size: 1.03rem; }
+  .r-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .7rem; margin-top: .9rem; font-weight: 600; font-size: .93rem; }
+  .pill { display: inline-flex; align-items: center; min-height: 2rem; padding: .15rem .85rem; border: 1px solid #b9c6ea; border-radius: 99rem; background: var(--white); color: var(--accent); font: 600 .88rem var(--sans); text-decoration: none; cursor: pointer; }
+  .pill:hover { background: var(--accent-soft); }
+  .r-data { grid-column: 1 / -1; margin: 0; }
+  .r-data video { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: .6rem; background: white; }
+  .r-data figcaption { margin-top: .4rem; font-size: .85rem; color: var(--muted); }
+  @media (max-width: 52rem) {
+    .r-row { grid-template-columns: 1fr; gap: 1rem; }
+  }
+
+  /* Hardware */
+  .hardware-stack { display: grid; gap: 1rem; }
+  .card { background: var(--white); border: 1px solid var(--line); border-radius: .7rem; padding: clamp(1rem, 3vw, 1.5rem); }
+  .featured { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 1.4rem; align-items: center; }
+  .place { color: var(--accent); font-size: .9rem; font-weight: 600; }
+  .card h3 { font-size: 1.3rem; margin-block: .15rem .45rem; }
+  .card p { color: var(--muted); }
+  .setup { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  .setup dt { font-size: .85rem; color: var(--muted); }
+  .setup dd { font-weight: 700; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+  .video-preview { position: relative; display: grid; align-items: end; isolation: isolate; overflow: hidden; aspect-ratio: 16 / 9; border-radius: .5rem; text-decoration: none; background: #1b2e50; color: white; }
+  .video-preview img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+  .video-preview::before { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 45%, #10182ae6); z-index: -1; }
+  .video-preview span { margin: .7rem; justify-self: start; padding: .35rem .7rem; background: var(--amber); color: var(--ink); border-radius: .3rem; font-size: .9rem; font-weight: 700; }
+  .video-preview:hover span { background: #ffc24d; }
+  .voice-media { position: relative; overflow: hidden; aspect-ratio: 16 / 9; border-radius: .5rem; background: #1b2e50; }
+  .voice-cmds { display: flex; flex-wrap: wrap; gap: .4rem; list-style: none; padding: 0; margin: .9rem 0 0; }
+  .voice-cmds li { padding: .15rem .65rem; border-radius: 99rem; background: var(--amber-soft); color: #7a5206; border: 1px solid #f0d08f; font-size: .84rem; font-weight: 600; }
+  .arm-media { position: relative; margin: 0; }
+  .arm-main { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: .5rem; }
+  .arm-inset { position: absolute; left: .7rem; bottom: .7rem; width: 22%; height: auto; aspect-ratio: 3 / 4; object-fit: cover; border: 3px solid var(--white); border-radius: .4rem; box-shadow: 0 6px 16px #13233f40; }
+  .platform-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .platform { padding: .7rem; }
+  .platform-photo { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; background: white; border: 1px solid var(--line); border-radius: .5rem; }
+  .platform-copy { padding: .8rem .35rem .3rem; }
+  .credit { margin-top: .4rem; font-size: .85rem; }
+  .playlist { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; background: var(--accent-soft); border-color: #cdd7f3; }
+  .playlist .links { margin-top: 0; }
+  .orbit-details summary { font-weight: 600; cursor: pointer; color: var(--accent); padding: .4rem 0; }
+  .plot-card { margin-top: .5rem; max-width: 34rem; background: var(--dark); color: #e8eeff; padding: clamp(.9rem, 2.8vw, 1.4rem); border-radius: .7rem; }
+  .plot-card :focus-visible { outline-color: #aabfff; }
+  .plot-card h3 { color: white; font-size: 1.15rem; margin-bottom: .4rem; }
+  .plot-view { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .5rem; }
+  .map { display: block; width: 100%; aspect-ratio: 320 / 315; }
+  .legend { list-style: none; margin: 0; padding: 0; font-size: .875rem; line-height: 1.35; }
+  .legend li { display: flex; align-items: baseline; gap: .42rem; margin-block: .48rem; }
+  .legend li::before { content: ""; width: .85rem; border-top: 2px solid; transform: translateY(-.18em); }
+  .legend .path { color: #ffdf85; }
+  .legend .orbit { color: #a7cfeb; }
+  .legend .inner { color: #f0aa9d; }
+  .legend .outer { color: #c9d4f6; }
+  .legend .orbit::before, .legend .inner::before { border-top-style: dashed; }
+  .plot-card figcaption { color: #c9d4f6; font-size: .875rem; }
+  .plot-controls { margin-block: .5rem .65rem; }
+  .plot-controls[hidden] { display: none; }
+  .scrub-fields { display: flex; justify-content: space-between; gap: .4rem; font-size: .875rem; }
+  output { font-variant-numeric: tabular-nums; }
+  input[type="range"] { display: block; width: 100%; margin: .35rem 0 .6rem; accent-color: #c4d5ff; cursor: pointer; }
+  .plot-card .button { min-height: 2.1rem; color: white; border-color: #8c9dcc; background: transparent; margin-right: .6rem; }
+  .plot-card .button:hover { background: #354976; }
+
+  /* Publications */
+  .pub-group + .pub-group { margin-top: 2.2rem; }
+  .pub-group > h3 { display: flex; align-items: baseline; gap: .6rem; font-family: var(--serif); font-weight: 600; font-size: 1.45rem; padding-bottom: .5rem; border-bottom: 2px solid var(--ink); }
+  .pub-group > h3 small { font-family: var(--sans); font-size: .9rem; font-weight: 500; color: var(--muted); }
+  .pubs { list-style: none; margin: 0; padding: 0; }
+  .pub { padding-block: 1.1rem; border-bottom: 1px solid var(--line); }
+  .pub-media { position: relative; overflow: hidden; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: .7rem; background: var(--white); }
+  .pub-media canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .pub-plain { margin-top: .3rem; color: var(--ink); font-size: .95rem; }
+  .yt { position: absolute; inset: 0; display: grid; place-items: center; width: 100%; height: 100%; padding: 0; border: 0; background: #1b2e50; cursor: pointer; }
+  .yt img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .yt::before { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 40%, #10182acc); z-index: 1; }
+  .yt-play { position: relative; z-index: 2; display: inline-flex; align-items: center; gap: .35rem; padding: .4rem .85rem; border-radius: 99rem; background: var(--amber); color: var(--ink); font: 700 .85rem var(--sans); box-shadow: 0 6px 16px #0006; }
+  .yt-play svg { width: 1rem; height: 1rem; }
+  .yt:hover .yt-play { background: #ffc24d; }
+  .yt-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .compare { position: absolute; inset: 0; background: #4d4d4d; }
+  .compare img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .compare .after { clip-path: inset(0 0 0 var(--pos)); }
+  .compare::after { content: ""; position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; margin-left: -1px; background: var(--amber); pointer-events: none; }
+  .compare input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
+  .compare input:focus-visible + .cmp-l { outline: 2px solid #aabfff; }
+  .cmp-l, .cmp-r, .pub-tag { position: absolute; bottom: .45rem; padding: .08rem .5rem; border-radius: 99rem; background: #13233fd9; color: white; font-size: .72rem; font-weight: 600; pointer-events: none; }
+  .cmp-l { left: .45rem; } .cmp-r { right: .45rem; }
+  .pub-tag { top: .45rem; bottom: auto; left: .45rem; z-index: 1; background: #13233fb3; }
+  .r-media .yt { border-radius: inherit; }
+  .pub-top { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .7rem; margin-bottom: .35rem; }
+  .venue { font-weight: 600; font-size: .93rem; color: var(--accent); }
+  .status { display: inline-block; padding: .08rem .6rem; border-radius: 99rem; font-size: .8rem; font-weight: 600; }
+  .status.cond { background: var(--amber-soft); color: #7a5206; border: 1px solid #f0d08f; }
+  .status.acc { background: var(--green-soft); color: var(--green); border: 1px solid #b8e0c9; }
+  .status.pub { background: var(--accent-soft); color: var(--accent); border: 1px solid #cdd7f3; }
+  .pub h4 { font-size: 1.08rem; font-weight: 600; }
+  .authors { margin-top: .25rem; color: var(--muted); font-size: .95rem; }
+  .authors strong { color: var(--ink); }
+  .pub-link { display: inline-block; margin-top: .4rem; font-weight: 600; font-size: .92rem; }
+
+  /* Background zig-zag timeline */
+  .zz-wrap { position: relative; margin-bottom: 2rem; --shift: 1.5rem; }
+  .zz-line { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  .zz-track { fill: none; stroke: #d5dcea; stroke-width: 3; stroke-linecap: round; }
+  .zz-path { fill: none; stroke: url(#zz-grad); stroke-width: 3.5; stroke-linecap: round; }
+  .zz { list-style: none; margin: 0; padding: .4rem 0 0; display: grid; gap: 1.6rem; position: relative; }
+  .ms { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 6.5rem minmax(0, 1fr); }
+  .ms-card { grid-column: 1; position: relative; padding: .95rem 1.1rem 1.05rem; background: var(--white); border: 1px solid var(--line); border-radius: .8rem; box-shadow: 0 8px 22px #13233f0f; }
+  .ms:nth-child(even) .ms-card { grid-column: 3; }
+  .ms-card::after { content: ""; position: absolute; top: 1.05rem; right: -7px; width: 12px; height: 12px; background: var(--white); border: solid var(--line); border-width: 1px 1px 0 0; transform: rotate(45deg); }
+  .ms:nth-child(even) .ms-card::after { right: auto; left: -7px; transform: rotate(-135deg); }
+  .node { position: absolute; z-index: 1; top: 1.1rem; left: calc(50% - 9px - var(--shift)); width: 18px; height: 18px; border-radius: 50%; background: var(--white); border: 4px solid var(--accent); box-shadow: 0 0 0 5px var(--paper); }
+  .ms:nth-child(even) .node { left: calc(50% - 9px + var(--shift)); }
+  .ms.now .node { background: var(--amber); border-color: #fff; box-shadow: 0 0 0 3px var(--amber), 0 0 0 8px var(--paper); }
+  .when { display: inline-block; padding: .08rem .6rem; border-radius: 99rem; background: var(--accent-soft); color: var(--accent); font-size: .82rem; font-weight: 600; }
+  .ms.now .when { background: var(--amber-soft); color: #7a5206; }
+  .ms-card h3 { font-size: 1.06rem; margin-top: .45rem; }
+  .ms-card p { color: var(--muted); font-size: .95rem; margin-top: .15rem; }
+  @media (prefers-reduced-motion: no-preference) {
+    .zz-path { transition: stroke-dashoffset 2s cubic-bezier(.4,.1,.2,1); }
+    .ms.now .node::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--amber); animation: ping 2.2s ease-out infinite; }
+    @keyframes ping { from { transform: scale(1); opacity: .9; } to { transform: scale(2.4); opacity: 0; } }
+  }
+  @media (max-width: 52rem) {
+    .zz-wrap { --shift: .45rem; }
+    .ms { grid-template-columns: 3rem minmax(0, 1fr); }
+    .ms .ms-card, .ms:nth-child(even) .ms-card { grid-column: 2; }
+    .node, .ms:nth-child(even) .node { left: calc(1.25rem - 9px - var(--shift)); }
+    .ms:nth-child(even) .node { left: calc(1.25rem - 9px + var(--shift)); }
+    .ms-card::after, .ms:nth-child(even) .ms-card::after { right: auto; left: -7px; transform: rotate(-135deg); }
+  }
+  .details-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 1.5rem; padding-top: 1.2rem; border-top: 1px solid var(--line); }
+  .details-grid dt { font-weight: 700; margin-bottom: .2rem; }
+  .details-grid dd { color: var(--muted); }
+
+  .people { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem 1.5rem; }
+  .people > div:nth-child(1) { grid-column: 1; grid-row: 1; }
+  .people > div:nth-child(2) { grid-column: 1; grid-row: 2; }
+  .people > div:nth-child(3) { grid-column: 2; grid-row: 1 / span 2; }
+  @media (max-width: 40rem) { .people > div:nth-child(n) { grid-column: 1; grid-row: auto; } }
+  .people dt { font-weight: 700; }
+  .people dd { color: var(--muted); }
+
+  .news { list-style: none; margin: 0; padding: 0; }
+  .news li { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: .2rem 1rem; padding-block: .9rem; border-bottom: 1px solid var(--line); }
+  .news li:first-child { padding-top: 0; }
+  .news time { font-weight: 600; color: var(--accent); font-size: .93rem; }
+  .news p { color: var(--muted); }
+
+  .extras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .extra { padding: 1.1rem 1.2rem 1.2rem; background: var(--white); border: 1px solid var(--line); border-radius: .8rem; }
+  .extra-wide { grid-column: 1 / -1; }
+  .extra h3 { font-family: var(--serif); font-weight: 600; font-size: 1.25rem; margin-bottom: .7rem; }
+  .tag-list { display: flex; flex-wrap: wrap; gap: .45rem; list-style: none; margin: 0; padding: 0; }
+  .tag-list li { padding: .2rem .75rem; border-radius: 99rem; background: var(--accent-soft); color: var(--accent); font-size: .88rem; font-weight: 600; }
+  .skill-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1.5rem; }
+  .skill-list dt { font-weight: 700; font-size: .92rem; }
+  .skill-list dd { color: var(--muted); font-size: .95rem; }
+  .dated { list-style: none; margin: 0; padding: 0; display: grid; gap: .55rem; }
+  .dated li { display: grid; grid-template-columns: 4.2rem minmax(0, 1fr); gap: .6rem; color: var(--muted); font-size: .95rem; }
+  .dated span { color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+  @media (max-width: 40rem) { .extras, .skill-list { grid-template-columns: 1fr; } }
+  footer { padding-block: clamp(2.8rem, 6vw, 4.5rem); color: #dfe6f7; background: var(--dark); }
+  footer h2 { color: white; font-size: clamp(2.2rem, 4.5vw, 3.3rem); }
+  footer p { margin-top: .7rem; max-width: 55ch; font-size: 1.06rem; }
+  footer .button { background: transparent; color: white; border-color: #8c9dcc; }
+  footer .button:hover { background: #2a3d68; }
+  footer .primary { background: var(--amber); border-color: var(--amber); color: var(--ink); }
+  footer .primary:hover { background: #ffc24d; }
+  footer :focus-visible { outline-color: #aabfff; }
+  .copyright { margin-top: 2.5rem; font-size: .85rem; color: #9fb0d6; }
+
+  @media (max-width: 60rem) {
+    .featured { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 52rem) {
+    .hero, .section { grid-template-columns: 1fr; }
+    .orbit-figure { max-width: 22rem; justify-self: center; }
+    .section-note { max-width: none; }
+    .fleet-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 40rem) {
+    .wrap { width: calc(100% - 2rem); }
+    nav { gap: .1rem .9rem; }
+    .platform-grid, .details-grid, .people { grid-template-columns: 1fr; }
+    .news li { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 28rem) {
+    .setup { grid-template-columns: 1fr 1fr; }
+    .plot-view { grid-template-columns: 1fr; }
+    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 0 .5rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body id="top">
+<a class="skip" href="#main">Skip to content</a>
+<header>
+  <div class="wrap header-inner">
+    <a class="wordmark" href="#top">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="11" fill="none" stroke="#2346a8" stroke-width="2.5"/><circle cx="16" cy="16" r="3" fill="#13233f"/><circle cx="27" cy="16" r="3.5" fill="#e9a92c"/></svg>
+      Anand Singh
+    </a>
+    <nav aria-label="Sections">
+      <a href="#about">About</a>
+      <a href="#research">Research</a>
+      <a href="#experiments">Experiments</a>
+      <a href="#publications">Publications</a>
+      <a href="#background">Background</a>
+      <a href="#news">News</a>
+      <a href="#skills">More</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+  <section class="hero" aria-labelledby="name">
+    <div>
+      <div class="intro-id">
+        <span class="avatar-ring"><img class="avatar" src="media/anand-singh.jpg" width="560" height="560" alt="Portrait of Anand Singh"></span>
+        <div>
+          <h1 id="name">Anand Singh</h1>
+          <p class="role">PhD student at Institute of Science Tokyo</p>
+        </div>
+      </div>
+      <p class="lead">I build robots and AI that stay safe in the real world.</p>
+      <p class="sublead">I work in <a href="https://sites.google.com/view/fujisawa-lab-en/home">Fujisawa Lab</a> at the Institute of Science Tokyo. I am interested in developing learning and control methods that help robots and AI systems make safe decisions in the real world, where people move in unexpected ways, robots share the same space, and sensors are not always reliable. I prove these methods work on paper and test them on real robots. To learn more, see <a href="#research">my research</a>.</p>
+      <ul class="journey" aria-label="Where I have worked">
+        <li class="now"><span>Now</span>Science Tokyo</li>
+        <li><span>2025–26</span>IISc Bengaluru</li>
+        <li><span>M.Tech.</span>IIT Jodhpur</li>
+      </ul>
+      <div class="links">
+        <a class="button primary" href="#demo">Watch robot simulations</a>
+        <a class="button" href="#research">Explore my work</a>
+        <a class="button" href="https://www.linkedin.com/in/anandsingh2302">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3V9.75Zm6.5 0h3.8v1.6h.06c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.77 2.65 4.77 6.1V21h-4v-4.9c0-1.17-.02-2.68-1.63-2.68-1.64 0-1.89 1.28-1.89 2.6V21h-4V9.75Z"/></svg>
+          LinkedIn
+        </a>
+        <a class="button" href="mailto:singh.a.ca69@m.isct.ac.jp">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6 8.5 7 8.5-7"/></svg>
+          Email
+        </a>
+      </div>
+    </div>
+
+    <figure class="orbit-figure">
+      <div class="orbit-stage">
+        <canvas id="orbit-canvas" width="640" height="640" role="img" aria-label="A robot spirals in toward a target and settles on a safe circle around it, staying between the safety limit and the sensing limit."></canvas>
+        <p class="orbit-phase" id="orbit-phase" aria-live="polite">Approaching the target</p>
+        <p class="orbit-readout" aria-hidden="true">Distance <output id="orbit-dist">0.75 m</output></p>
+      </div>
+      <div class="orbit-player">
+        <div class="o-row">
+          <button type="button" class="o-btn" id="o-restart" aria-label="Restart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5v6h6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.6 15a7 7 0 1 0 1.7-7.3L5 11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+          <button type="button" class="o-btn" id="o-back" aria-label="Back 2 seconds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6l-7 6 7 6zM20 6l-7 6 7 6z" fill="currentColor"/></svg></button>
+          <button type="button" class="o-btn o-main" id="o-play" aria-label="Pause"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg></button>
+          <button type="button" class="o-btn" id="o-fwd" aria-label="Forward 2 seconds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 6l7 6-7 6zM4 6l7 6-7 6z" fill="currentColor"/></svg></button>
+          <output id="o-time" class="o-time">0.0 s</output>
+        </div>
+        <input id="o-scrub" class="o-scrub" type="range" min="0" max="40" step="0.1" value="0" aria-label="Simulation time in seconds">
+        <div class="o-speed" role="group" aria-label="Playback speed">
+          <span>Speed</span>
+          <button type="button" data-speed="0.5" aria-pressed="false">0.5×</button>
+          <button type="button" data-speed="1" aria-pressed="false">1×</button>
+          <button type="button" data-speed="2" aria-pressed="true">2×</button>
+          <button type="button" data-speed="4" aria-pressed="false">4×</button>
+        </div>
+      </div>
+      <figcaption>
+        <ul class="orbit-key">
+          <li style="--c:#e9a92c">Robot path</li>
+          <li class="dash" style="--c:#2346a8">Safe circle</li>
+          <li class="dash" style="--c:#d98872">Safety limit</li>
+          <li style="--c:#a9b6da">Sensing limit</li>
+        </ul>
+        The robot only measures its distance to the target. Real output of my controller.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="fleet" id="demo" aria-labelledby="fleet-title">
+    <div class="fleet-head">
+      <h2 id="fleet-title">Robot fleet simulations</h2>
+      <p>Many robots sharing busy spaces with people.</p>
+    </div>
+    <div class="fleet-grid">
+      <details id="hospital-simulation" open>
+        <summary>Hospital: 6 delivery robots</summary>
+        <figure>
+          <video aria-label="Hospital robot fleet simulation" width="1280" height="720" class="auto-video" muted loop controls playsinline preload="metadata" poster="media/hospital-fleet.jpg">
+            <source src="media/hospital-fleet.mp4" type="video/mp4">Your browser cannot play this video.
+          </video>
+          <figcaption>Robots deliver items through corridors with people, beds, and wheelchairs.</figcaption>
+        </figure>
+      </details>
+      <details id="warehouse-simulation" open>
+        <summary>Warehouse: 4 transport robots</summary>
+        <figure>
+          <video aria-label="Warehouse robot fleet simulation" width="1280" height="720" class="auto-video" muted loop controls playsinline preload="metadata" poster="media/warehouse-fleet.jpg">
+            <source src="media/warehouse-fleet.mp4" type="video/mp4">Your browser cannot play this video.
+          </video>
+          <figcaption>Robots move goods between shelves, workers, and forklifts.</figcaption>
+        </figure>
+      </details>
+    </div>
+  </section>
+
+  <section class="section" id="about" aria-labelledby="about-heading">
+    <h2 id="about-heading">About</h2>
+    <div class="prose">
+      <p>I’m a PhD student in Mathematical and Computing Science at the Institute of Science Tokyo, where I work in <a href="https://sites.google.com/view/fujisawa-lab-en/home">Fujisawa Lab</a> with Prof. Katsuki Fujisawa.</p>
+      <p>My research asks a simple question: <strong>how can a robot learn and still stay safe?</strong> I combine reinforcement learning, probability, and control theory. I use these tools for robots in hospitals and warehouses, and for AI that makes reliable predictions from real-world video.</p>
+      <p>Before my PhD, I was a Research Associate at the Robert Bosch Centre for Cyber-Physical Systems, IISc Bengaluru. I did my M.Tech. at IIT Jodhpur with Dr. Anoop Jain, where I built a controller that guides a robot in GPS-denied environments.</p>
+      <p>I’m always glad to exchange ideas and explore new collaborations. <a href="#contact">Let’s connect</a>.</p>
+    </div>
+  </section>
+
+  <section class="section" id="research" aria-labelledby="research-heading">
+    <h2 id="research-heading">Research</h2>
+    <div class="r-list">
+      <article class="r-row">
+        <div class="r-media">
+          <canvas class="sim" data-sim="hospital" width="640" height="360" role="img" aria-label="Top-down view of a hospital corridor. A delivery robot slows down and steers around nurses, visitors and a parked bed while keeping a safety bubble around itself."></canvas>
+        </div>
+        <div class="r-text">
+          <h3>Safe reinforcement learning</h3>
+          <p>Robots that learn from experience while keeping the chance of failure low. In a busy hospital corridor, the robot slows down and keeps its distance when people come close, even when its sensors cannot see everything.</p>
+          <div class="r-meta"><span>Ongoing PhD work</span></div>
+        </div>
+      </article>
+      <article class="r-row">
+        <div class="r-media">
+          <canvas class="sim" data-sim="warehouse" width="640" height="360" role="img" aria-label="Top-down view of a warehouse. Four robots carry boxes along aisles between storage racks and take turns at shared crossings."></canvas>
+        </div>
+        <div class="r-text">
+          <h3>Many robots, one shared space</h3>
+          <p>When robots share aisles, each robot’s choice affects the others. I use game theory to plan how they move, so they take turns at crossings instead of blocking or hitting each other.</p>
+          <div class="r-meta"><span>Ongoing PhD work</span></div>
+        </div>
+      </article>
+      <article class="r-row">
+        <div class="r-media">
+          <canvas class="sim" data-sim="camera" width="640" height="360" role="img" aria-label="A camera view of a corridor with people detected by a multimodal AI model. When the video becomes noisy, the confidence drops and the system waits instead of guessing."></canvas>
+        </div>
+        <div class="r-text">
+          <h3>Trustworthy multimodal AI</h3>
+          <p>AI that learns from many kinds of input at once: video, sound, depth, motion sensors and text. When one input is noisy or missing, it leans on the others, holds back instead of guessing, and explains its answer with evidence from each input. This matters for early recognition of what is happening in first-person video and for vision-language models people can rely on.</p>
+          <ul class="r-tags" aria-label="Input types">
+            <li>Video</li><li>Audio</li><li>Depth</li><li>Motion sensors</li><li>Text</li>
+          </ul>
+          <div class="r-meta"><span>Research Assistant, Institute of Science Tokyo</span></div>
+        </div>
+      </article>
+      <article class="r-row" id="attacks">
+        <div class="r-media r-dark">
+          <div class="r-pair">
+            <figure><video id="rl-nominal" muted loop playsinline preload="metadata" poster="media/rl/Walker2d_nominal.jpg" aria-label="Walker robot walking normally"><source src="media/rl/Walker2d_mujoco_nominal.mp4" type="video/mp4"></video><figcaption><span class="dot ok"></span>Normal</figcaption></figure>
+            <figure><video id="rl-attacked" muted loop playsinline preload="metadata" poster="media/rl/Walker2d_perturbed.jpg" aria-label="Walker robot under a hidden input attack"><source src="media/rl/Walker2d_mujoco_perturbed.mp4" type="video/mp4"></video><figcaption><span class="dot bad"></span>Under hidden attack</figcaption></figure>
+          </div>
+          <div class="r-tabs" role="group" aria-label="Choose a robot">
+            <button type="button" data-robot="Walker2d" aria-pressed="true">Walker</button>
+            <button type="button" data-robot="Hopper" aria-pressed="false">Hopper</button>
+            <button type="button" data-robot="HalfCheetah" aria-pressed="false">Cheetah</button>
+            <button type="button" data-robot="Ant" aria-pressed="false">Ant</button>
+          </div>
+        </div>
+        <div class="r-text">
+          <h3>Hidden attacks on learning robots</h3>
+          <p>A learning robot trusts what its sensors tell it. I study small, hidden changes to those inputs that are hard to detect but still change how the robot moves. Knowing how these attacks work is the first step to robots that resist them. Tested on four simulated robots in MuJoCo.</p>
+          <div class="r-meta">
+            <span>Research Associate, IISc Bengaluru (Jul 2025 – Jul 2026)</span>
+            <button type="button" class="pill" id="rl-data-toggle" aria-expanded="false" aria-controls="rl-data">Show attack data</button>
+          </div>
+        </div>
+        <figure class="r-data" id="rl-data" hidden>
+            <video id="rl-compare" muted loop playsinline controls preload="none" poster="media/rl/Walker2d_comparison.jpg" aria-label="Normal policy, hidden attack and unconstrained attack compared side by side"><source src="media/rl/Walker2d_comparison_3way.mp4" type="video/mp4"></video>
+            <figcaption>Normal run, hidden attack and an unconstrained attack. The hidden attack keeps its detection cost (KL) near zero.</figcaption>
+          </figure>
+      </article>
+      <article class="r-row">
+        <div class="r-media"><button type="button" class="yt" data-yt="XoNbWddjNvY" aria-label="Play the Khepera IV experiment video"><img src="https://i.ytimg.com/vi/XoNbWddjNvY/hqdefault.jpg" width="480" height="360" alt="" loading="lazy"><span class="yt-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" fill="currentColor"/></svg>Play experiment</span></button></div>
+        <div class="r-text">
+          <h3>Circling a target using only distance</h3>
+          <p>A robot that only knows how far it is from a target can still circle it safely. My controller keeps it inside a safe ring around the target, with safety and security built into the design. Tested on a real Khepera IV robot.</p>
+          <div class="r-meta">
+            <span>IEEE Transactions on Automatic Control (conditionally accepted)</span>
+            <a class="pill" href="https://arxiv.org/abs/2501.08058">Paper</a>
+          </div>
+        </div>
+      </article>
+      <article class="r-row">
+        <div class="r-media"><video class="auto-video" muted loop controls playsinline preload="metadata" poster="media/multi-agent-circumnavigation.jpg" aria-label="ROS 2 and Gazebo simulation: a leader and two follower robots circle a target at 2 metres with equal spacing, with live plots of orbit radius, spacing error, control inputs and a constraint check showing all constraints safe"><source src="media/multi-agent-circumnavigation.mp4" type="video/mp4">Your browser cannot play this video.</video></div>
+        <div class="r-text">
+          <h3>A team of robots circling a target</h3>
+          <p>The same idea, scaled up to a team. A leader and two followers circle a target using only distance measurements, settle into an evenly spaced ring, and never cross the inner safety limit or the outer sensing limit. A super-twisting observer estimates what the robots cannot measure directly. Shown here in ROS 2 and Gazebo, with live plots and a constraint check.</p>
+        </div>
+      </article>
+      <article class="r-row">
+        <div class="r-media"><canvas class="sim" data-sim="llm" width="640" height="360" role="img" aria-label="A language model writes a calm reply to an angry user. When it is about to choose a rude word, the safety score would drop below the margin, so a safer word is chosen instead."></canvas></div>
+        <div class="r-text">
+          <h3>Safety margins for language models</h3>
+          <p>Language models can drift into unsafe replies. Here, control theory watches a safety score word by word and steers the model so the score never falls below a strict margin, choosing a calmer word when needed.</p>
+          <div class="r-meta">
+            <span>Indian Control Conference (ICC) 2027</span>
+            <a class="pill" href="https://arxiv.org/abs/2610.17929">Paper</a>
+          </div>
+        </div>
+      </article>
+      <article class="r-row">
+        <div class="r-media"><canvas class="sim" data-sim="unicycle" width="640" height="360" role="img" aria-label="A wheeled robot drives past five obstacles to a goal flag while wind pushes it sideways, always keeping a safe distance."></canvas></div>
+        <div class="r-text">
+          <h3>Safe navigation past many obstacles</h3>
+          <p>A wheeled robot drives to its goal through a field of obstacles while wind-like disturbances push it around. Learning helps it handle the disturbances, and safety rules make sure it always keeps a safe gap.</p>
+          <div class="r-meta">
+            <span>Indian Control Conference (ICC) 2027</span>
+            <a class="pill" href="https://arxiv.org/abs/2610.17916">Paper</a>
+          </div>
+        </div>
+      </article>
+      <article class="r-row">
+        <div class="r-media"><div class="compare" style="--pos:50%"><span class="pub-tag">Illustration on a test image</span><img src="media/plos-before.png" width="360" height="360" alt="Dim, low-contrast test scan before enhancement"><img class="after" src="media/plos-after.png" width="360" height="360" alt="The same scan after enhancement, with clearer edges"><input type="range" min="0" max="100" value="50" aria-label="Slide to compare before and after"><span class="cmp-l">Before</span><span class="cmp-r">After</span></div></div>
+        <div class="r-text">
+          <h3>Clearer medical images</h3>
+          <p>Dark, low-contrast scans hide small details. Using fractional derivatives, this method sharpens edges and brings out texture in single-channel medical images, so they are easier to read.</p>
+          <div class="r-meta">
+            <span>PLOS ONE, 2025</span>
+            <a class="pill" href="https://doi.org/10.1371/journal.pone.0319990">Paper</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="experiments" aria-labelledby="experiments-heading">
+    <div>
+      <h2 id="experiments-heading">Hardware experiments</h2>
+      <p class="section-note">Real robots I have worked with.</p>
+    </div>
+    <div class="hardware-stack">
+      <article class="card featured">
+        <div>
+          <p class="place">IIT Jodhpur, DSC Lab</p>
+          <h3>Khepera IV: circling a target</h3>
+          <p>The robot only knows how far it is from the target. Using just that distance, my controller keeps it on a safe circular path. Overhead cameras tracked the robot.</p>
+          <dl class="setup">
+            <div><dt>Circle radius</dt><dd>0.75 m</dd></div>
+            <div><dt>Safe range</dt><dd>0.50–1.40 m</dd></div>
+            <div><dt>Speed</dt><dd>0.50 m/s</dd></div>
+          </dl>
+          <div class="links">
+            <a class="button" href="https://arxiv.org/html/2501.08058v2#S5.SS2">Read the results</a>
+          </div>
+        </div>
+        <a class="video-preview" href="https://www.youtube.com/watch?v=XoNbWddjNvY" aria-label="Watch the Khepera IV experiment on YouTube">
+          <img src="https://i.ytimg.com/vi/XoNbWddjNvY/hqdefault.jpg" width="480" height="360" alt="" loading="lazy">
+          <span>▶ Watch video</span>
+        </a>
+      </article>
+
+      <div class="platform-grid">
+        <article class="card platform">
+          <video class="platform-photo auto-video" muted loop playsinline preload="metadata" poster="media/turtlebot4-mapping.jpg" width="960" height="540" aria-label="TurtleBot 4 robot next to an animated map that it builds of a room with its lidar"><source src="media/turtlebot4-mapping.mp4" type="video/mp4"></video>
+          <div class="platform-copy">
+            <p class="place">Ground robot</p>
+            <h3>TurtleBot 4</h3>
+            <p>I set it up during my M.Tech. for indoor mapping and navigation with ROS 2. The animation shows how it builds a map of a room with its lidar.</p>
+          </div>
+        </article>
+        <article class="card platform">
+          <a class="video-preview" href="https://www.youtube.com/watch?v=sdBjfV_qMvQ" aria-label="Watch the Crazyflie 2.1 flight video on YouTube">
+            <img src="media/crazyflie-video.jpg" width="480" height="360" alt="" loading="lazy">
+            <span>▶ Watch flight</span>
+          </a>
+          <div class="platform-copy">
+            <p class="place">Aerial robot</p>
+            <h3>Crazyflie 2.1</h3>
+            <p>A small indoor drone for flight control and team flying experiments.</p>
+          </div>
+        </article>
+      </div>
+
+      <article class="card featured gesture-arm">
+        <div>
+          <p class="place">IIT Jodhpur, embedded systems project</p>
+          <h3>Robotic arm that copies your hand</h3>
+          <p>Bend your fingers and the arm follows. Flex sensors on a glove change their resistance as each finger bends. An Arduino reads them, turns them into servo angles, and an HC-05 Bluetooth module sends the commands wirelessly to the arm. This kind of control lets a person work from a safe distance, for example in bomb disposal. Built with Sourav Sarkar for Dr. Deepakkumar M. Fulwani’s course.</p>
+          <dl class="setup">
+            <div><dt>Sensing</dt><dd>Flex sensors</dd></div>
+            <div><dt>Brain</dt><dd>Arduino UNO</dd></div>
+            <div><dt>Link</dt><dd>Bluetooth</dd></div>
+          </dl>
+        </div>
+        <figure class="arm-media">
+          <img class="arm-main" src="media/gesture-arm-setup.jpg" width="1280" height="963" alt="Workbench with a red 3D-printed robotic arm, an Arduino UNO, an HC-05 Bluetooth module on a breadboard, and a laptop running the Arduino IDE" loading="lazy">
+          <img class="arm-inset" src="media/flex-sensors.jpg" width="450" height="600" alt="Two flex sensors used on the glove" loading="lazy">
+        </figure>
+      </article>
+
+      <article class="card featured voice-bot">
+        <div>
+          <p class="place">IISc Open Day</p>
+          <h3>Voice-controlled robot car</h3>
+          <p>A four-wheel robot that drives when you talk to it. You speak a command into a phone app, such as “move forward”, “move backward”, “turn left”, “turn right” or “stop”. The phone sends it over Wi-Fi, and an Arduino turns it into motor commands. An ultrasonic sensor on a turning servo lets it look around for obstacles. I showed it to visitors at the IISc Open Day.</p>
+          <dl class="setup">
+            <div><dt>Brain</dt><dd>Arduino UNO</dd></div>
+            <div><dt>Link</dt><dd>Wi-Fi</dd></div>
+            <div><dt>Sensing</dt><dd>Ultrasonic</dd></div>
+          </dl>
+        </div>
+        <div class="voice-media">
+          <button type="button" class="yt" data-yt="CZjMcT19tuM" aria-label="Play the voice-controlled robot video from IISc Open Day"><img src="https://i.ytimg.com/vi/CZjMcT19tuM/hqdefault.jpg" width="480" height="360" alt="" loading="lazy"><span class="yt-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" fill="currentColor"/></svg>Watch at IISc Open Day</span></button>
+        </div>
+      </article>
+
+      <article class="card playlist">
+        <div>
+          <h3>All my experiment videos</h3>
+          <p>Every recording in one YouTube playlist.</p>
+        </div>
+        <div class="links">
+          <a class="button primary" href="https://www.youtube.com/playlist?list=PLVdfM0HyGd6gU-D-6eIxi7szGHfK9KF6E">Open playlist</a>
+          <a class="button" href="https://sites.google.com/iitj.ac.in/dsclab/home?authuser=0">DSC Lab</a>
+        </div>
+      </article>
+
+      <details class="orbit-details">
+        <summary>Try the interactive controller simulation</summary>
+        <figure class="plot-card" id="orbit-demo" aria-labelledby="plot-title" aria-describedby="plot-note">
+          <h3 id="plot-title">Circling a target using only distance</h3>
+          <div class="plot-view">
+            <canvas class="map" id="trajectory" width="640" height="630" role="img" aria-label="Top-down robot path showing the target, the desired circle, and the inner and outer limits.">The simulated robot settles on a 0.75 m circle, staying between a 0.50 m safety limit and a 1.40 m sensing limit.</canvas>
+            <ul class="legend" aria-label="Plot legend">
+              <li class="path">Robot path</li>
+              <li class="orbit">Circle, 0.75 m</li>
+              <li class="inner">Safety, 0.50 m</li>
+              <li class="outer">Sensing, 1.40 m</li>
+            </ul>
+          </div>
+          <div class="plot-controls" id="plot-controls" hidden>
+            <div class="scrub-fields">
+              <label for="time">Time</label>
+              <output id="plot-time" for="time" aria-live="off">12.0 s</output>
+            </div>
+            <input id="time" type="range" min="0" max="30" step=".1" value="12" aria-describedby="plot-note">
+            <button class="button" id="play" type="button">Play simulation</button>
+            <output id="plot-range" aria-live="off">Range 0.75 m</output>
+          </div>
+          <figcaption id="plot-note">Simulation of the published controller with the same settings as the paper.</figcaption>
+        </figure>
+      </details>
+    </div>
+  </section>
+
+  <section class="section" id="publications" aria-labelledby="publications-heading">
+    <div>
+      <h2 id="publications-heading">Publications</h2>
+      <p class="section-note">My name is in bold.</p>
+    </div>
+    <div>
+      <div class="pub-group">
+        <h3>Journals <small>2 papers</small></h3>
+        <ul class="pubs">
+          <li class="pub">
+            <div class="pub-top">
+              <span class="venue">IEEE Transactions on Automatic Control</span>
+              <span class="status cond">Conditionally accepted</span>
+            </div>
+            <h4>Range-Only Dynamic Output Feedback Controller for Safe and Secure Target Circumnavigation</h4>
+            <p class="authors"><strong>Anand Singh</strong> and Anoop Jain</p>
+            <a class="pub-link" href="https://arxiv.org/abs/2501.08058" aria-label="Range-only circumnavigation paper on arXiv">arXiv</a>
+          </li>
+          <li class="pub">
+            <div class="pub-top">
+              <span class="venue">PLOS ONE, 2025</span>
+              <span class="status pub">Published</span>
+            </div>
+            <h4>Single Channel Medical Images Enhancement Using Fractional Derivatives</h4>
+            <p class="authors"><strong>Anand Singh</strong>, Mohammad Sajid, Naveen Kumar Tiwari, and Anurag Shukla</p>
+            <a class="pub-link" href="https://doi.org/10.1371/journal.pone.0319990" aria-label="Medical image enhancement paper in PLOS ONE">Read paper</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="pub-group">
+        <h3>Conferences <small>2 papers</small></h3>
+        <ul class="pubs">
+          <li class="pub">
+            <div class="pub-top">
+              <span class="venue">Indian Control Conference (ICC) 2027</span>
+              <span class="status acc">Accepted</span>
+            </div>
+            <h4>Enforcing a Strict Safety Margin in LLM Text Generation via Barrier Lyapunov Control</h4>
+            <p class="authors"><strong>Anand Singh</strong>, Shubham Singh, and Anjali Tiwari</p>
+            <a class="pub-link" href="https://arxiv.org/abs/2610.17929" aria-label="Safety margin in LLM text generation, extended version on arXiv">arXiv (extended version)</a>
+          </li>
+          <li class="pub">
+            <div class="pub-top">
+              <span class="venue">Indian Control Conference (ICC) 2027</span>
+              <span class="status acc">Accepted</span>
+            </div>
+            <h4>Safe Unicycle Navigation Among Multiple Obstacles Under Bounded Disturbances: A Learning-Augmented CLF-CBF Approach</h4>
+            <p class="authors">Shubham Singh, Anjali Tiwari, and <strong>Anand Singh</strong></p>
+            <a class="pub-link" href="https://arxiv.org/abs/2610.17916" aria-label="Safe unicycle navigation, extended version on arXiv">arXiv (extended version)</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="background" aria-labelledby="background-heading">
+    <h2 id="background-heading">Background</h2>
+    <div>
+      <div class="zz-wrap" id="zz-wrap">
+        <svg class="zz-line" aria-hidden="true">
+          <defs>
+            <linearGradient id="zz-grad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="600">
+              <stop offset="0" stop-color="#e9a92c"/>
+              <stop offset=".45" stop-color="#2346a8"/>
+              <stop offset="1" stop-color="#7f95d6"/>
+            </linearGradient>
+          </defs>
+          <path class="zz-track"/>
+          <path class="zz-path"/>
+        </svg>
+        <ol class="zz">
+          <li class="ms now">
+            <span class="node" aria-hidden="true"></span>
+            <div class="ms-card">
+              <p class="when"><time datetime="2026-09">Sep 2026</time> – now</p>
+              <h3>PhD, Mathematical and Computing Science</h3>
+              <p>Institute of Science Tokyo. Advisor: Prof. Katsuki Fujisawa</p>
+            </div>
+          </li>
+          <li class="ms">
+            <span class="node" aria-hidden="true"></span>
+            <div class="ms-card">
+              <p class="when"><time datetime="2025-07">Jul 2025</time> – <time datetime="2026-07">Jul 2026</time></p>
+              <h3>Research Associate</h3>
+              <p>Robert Bosch Centre for Cyber-Physical Systems, IISc Bengaluru. Reinforcement learning and resilient control.</p>
+            </div>
+          </li>
+          <li class="ms">
+            <span class="node" aria-hidden="true"></span>
+            <div class="ms-card">
+              <p class="when"><time datetime="2023">2023</time> – <time datetime="2025">2025</time></p>
+              <h3>M.Tech., Cyber-Physical Systems</h3>
+              <p>IIT Jodhpur. Robot control with Dr. Anoop Jain at the <a href="https://sites.google.com/iitj.ac.in/dsclab/home?authuser=0">DSC Lab</a></p>
+            </div>
+          </li>
+          <li class="ms">
+            <span class="node" aria-hidden="true"></span>
+            <div class="ms-card">
+              <p class="when"><time datetime="2019">2019</time> – <time datetime="2023">2023</time></p>
+              <h3>B.Tech., Computer Science and Engineering</h3>
+              <p>Rajkiya Engineering College, Kannauj</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="collaborators" aria-labelledby="collaborators-heading">
+    <h2 id="collaborators-heading">People I work with</h2>
+    <dl class="people">
+      <div><dt>PhD advisor</dt><dd>Prof. Katsuki Fujisawa, Institute of Science Tokyo</dd></div>
+      <div><dt>Mentors</dt><dd>Prof. Anoop Jain, Prof. Anand Mishra, Prof. Naveen Kumar Tiwari, and Prof. Anurag Shukla</dd></div>
+      <div><dt>Co-authors and collaborators</dt><dd>Prof. Sébastien Gros, Prof. Johannes Betz, Prof. Xun Shen, Prof. Mohammad Sajid, Dr. Akifumi Wachi, Dr. Mehrshad Sadria, Dr. Mattia Piccinini, Dr. Shubham Singh, and Dr. Anjali Tiwari</dd></div>
+    </dl>
+  </section>
+
+  <section class="section" id="news" aria-labelledby="news-heading">
+    <h2 id="news-heading">News</h2>
+    <ul class="news">
+      <li><time datetime="2026-10">Oct 2026</time><p>Two papers accepted at <a href="https://controlsociety.org/icc/">ICC 2027</a>, IIT Kharagpur: safe robot navigation, and safety margins for language models.</p></li>
+      <li><time datetime="2026-09">Sep 2026</time><p>Started my PhD at the Institute of Science Tokyo.</p></li>
+    </ul>
+  </section>
+  <section class="section" id="skills" aria-labelledby="skills-heading">
+    <h2 id="skills-heading">More about me</h2>
+    <div class="extras">
+      <div class="extra extra-wide">
+        <h3>Reviewing</h3>
+        <ul class="tag-list">
+          <li>Automatica</li><li>IEEE Transactions on Automatic Control</li><li>IEEE Control Systems Letters</li><li>IEEE ACC</li><li>IEEE CDC</li><li>Indian Control Conference 2025</li><li>Advances in Robotics 2025</li>
+        </ul>
+      </div>
+      <div class="extra extra-wide">
+        <h3>Toolkit</h3>
+        <dl class="skill-list">
+          <div><dt>Programming</dt><dd>C, C++, C#, Python, Java, MATLAB</dd></div>
+          <div><dt>Libraries</dt><dd>PyTorch, Pandas, NumPy, scikit-learn</dd></div>
+          <div><dt>Research methods</dt><dd>Reinforcement learning, safe and robust control, game-theoretic planning, adversarial robustness, multi-agent systems</dd></div>
+          <div><dt>Robots</dt><dd>Khepera IV, Crazyflie drone, TurtleBot 4, Arduino</dd></div>
+          <div><dt>Systems</dt><dd>Windows, Ubuntu, ROS 2, Gazebo</dd></div>
+          <div><dt>Writing and design</dt><dd>LaTeX, Microsoft Office, Ipe, Blender</dd></div>
+        </dl>
+      </div>
+      <div class="extra">
+        <h3>Achievements</h3>
+        <ul class="dated">
+          <li><span>2024</span>GATE qualified, Data Science and Artificial Intelligence</li>
+          <li><span>2024</span>GATE qualified, Computer Science and Engineering</li>
+          <li><span>2023</span>GATE qualified, Computer Science and Engineering</li>
+        </ul>
+      </div>
+      <div class="extra">
+        <h3>Certifications</h3>
+        <ul class="dated">
+          <li><span>2025</span>Attended the Indian Control Conference, IISc Bengaluru</li>
+          <li><span>2023</span>Internship in Virtual Labs Development, IIT Kanpur</li>
+          <li><span>2021</span>NPTEL: Data Analytics with Python</li>
+          <li><span>2019</span>NPTEL: Developing Soft Skills and Personality</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="contact" aria-labelledby="contact-heading">
+  <div class="wrap">
+    <h2 id="contact-heading">Let’s work together</h2>
+    <p>I’m happy to talk about safe reinforcement learning, multi-robot control, robotics, and trustworthy AI.</p>
+    <div class="links">
+      <a class="button primary" href="mailto:singh.a.ca69@m.isct.ac.jp">Email me</a>
+      <a class="button" href="https://www.linkedin.com/in/anandsingh2302">LinkedIn</a>
+    </div>
+    <p class="copyright">© 2026 Anand Singh</p>
+  </div>
+</footer>
+<script>
+  // Equations (1), (11), and (23) with the parameters in Section V-A of arXiv:2501.08058v2.
+  const inner = 0.50;
+  const desired = 0.75;
+  const outer = 1.40;
+  const speed = 0.5;
+  const timeStep = 0.005;
+  const previewDuration = 30;
+
+  function derivative([x, y, heading, filter]) {
+    const r = Math.hypot(x, y);
+    const error = r - desired;
+    const side = error > 0 ? outer - desired : desired - inner;
+    const beta = 0.5 * r * r - 7 * filter;
+    const barrier = error / (r * (side * side - error * error));
+    return [speed * Math.cos(heading), speed * Math.sin(heading),
+      speed * (1 / desired + 14 * beta + 0.5 * barrier), speed * beta];
+  }
+
+  function runSimulation() {
+    let state = [1.3, 0.25, 25 * Math.PI / 180, 0];
+    const samples = [state];
+    for (let step = 0; step < previewDuration / timeStep; step += 1) {
+      const atStart = derivative(state);
+      const atMidpoint = derivative(state.map((value, i) => value + atStart[i] * timeStep / 2));
+      state = state.map((value, i) => value + atMidpoint[i] * timeStep);
+      if ((step + 1) % 20 === 0) samples.push(state);
+    }
+    return samples;
+  }
+
+  const canvas = document.querySelector('#trajectory');
+  const ctx = canvas.getContext('2d');
+  const controls = document.querySelector('#plot-controls');
+  const time = document.querySelector('#time');
+  const timeDisplay = document.querySelector('#plot-time');
+  const rangeDisplay = document.querySelector('#plot-range');
+  const play = document.querySelector('#play');
+  const centerX = 161;
+  const centerY = 156;
+  const scale = 87;
+  let animation = null;
+
+  function circle(radius, fill, stroke, dash = []) {
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    if (fill) {
+      ctx.fillStyle = fill;
+      ctx.fill();
+    }
+    if (stroke) {
+      ctx.strokeStyle = stroke;
+      ctx.setLineDash(dash);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
+  function textLabel(text, x, y, color = '#e8eeff', weight = 500) {
+    ctx.fillStyle = color;
+    ctx.font = weight + ' 15px system-ui, sans-serif';
+    ctx.fillText(text, x, y);
+  }
+
+  function draw(samples, seconds) {
+    const end = Math.round(seconds * 10);
+    const [x, y, heading] = samples[end];
+    timeDisplay.value = seconds.toFixed(1) + ' s';
+    rangeDisplay.value = 'Range ' + Math.hypot(x, y).toFixed(2) + ' m';
+    time.setAttribute('aria-valuetext', timeDisplay.value + ', ' + rangeDisplay.value);
+
+    ctx.setTransform(2, 0, 0, 2, 0, 0);
+    ctx.clearRect(0, 0, 320, 315);
+    ctx.lineWidth = 1.25;
+    circle(outer * scale, '#213361', '#a7b8e6');
+    circle(inner * scale, '#19254b', '#f0aa9d', [4, 4]);
+    circle(desired * scale, null, '#a7cfeb', [4, 4]);
+    circle(3.5, '#fff1b5');
+
+    ctx.beginPath();
+    ctx.moveTo(centerX + scale * samples[0][0], centerY - scale * samples[0][1]);
+    for (let i = 1; i <= end; i += 1) {
+      ctx.lineTo(centerX + scale * samples[i][0], centerY - scale * samples[i][1]);
+    }
+    ctx.strokeStyle = '#ffdf85';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(centerX + x * scale, centerY - y * scale);
+    ctx.rotate(-heading);
+    ctx.fillStyle = '#ffdf85';
+    ctx.beginPath();
+    ctx.moveTo(8, 0);
+    ctx.lineTo(-4, -4.5);
+    ctx.lineTo(-4, 4.5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    textLabel('Target', 172, 160);
+  }
+
+  function pause() {
+    if (animation !== null) cancelAnimationFrame(animation);
+    animation = null;
+    play.textContent = 'Play simulation';
+  }
+
+  if (ctx) {
+    const samples = runSimulation();
+    controls.hidden = false;
+    draw(samples, Number(time.value));
+
+    time.addEventListener('input', () => {
+      pause();
+      draw(samples, Number(time.value));
+    });
+
+    play.addEventListener('click', () => {
+      if (animation !== null) {
+        pause();
+        return;
+      }
+      const from = time.valueAsNumber >= previewDuration ? 0 : time.valueAsNumber;
+      const started = performance.now();
+      play.textContent = 'Pause simulation';
+
+      function frame(now) {
+        time.value = Math.min(previewDuration, from + (now - started) / 1000).toFixed(1);
+        draw(samples, time.valueAsNumber);
+        if (time.valueAsNumber < previewDuration) animation = requestAnimationFrame(frame);
+        else pause();
+      }
+
+      animation = requestAnimationFrame(frame);
+    });
+  }
+</script>
+<script>
+  function revealFleetSimulation() {
+    if (location.hash === '#hospital-simulation' || location.hash === '#warehouse-simulation') {
+      document.getElementById(location.hash.slice(1)).open = true;
+    }
+  }
+  window.addEventListener('hashchange', revealFleetSimulation);
+  revealFleetSimulation();
+
+  for (const player of document.querySelectorAll('.fleet-gallery video')) {
+    const panel = player.closest('details');
+    panel.addEventListener('toggle', () => {
+      if (!panel.open) player.pause();
+    });
+  }
+</script>
+<script>
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Run an animation only while its element is on screen.
+  function whenVisible(el, start, stop) {
+    if (!('IntersectionObserver' in window)) { start(); return; }
+    new IntersectionObserver(entries => {
+      for (const e of entries) (e.isIntersecting ? start : stop)();
+    }, { threshold: 0.05 }).observe(el);
+  }
+
+  function animate(el, drawFrame, stillTime) {
+    let raf = null, last = null, t = 0;
+    function frame(now) {
+      if (last !== null) t += Math.min(0.05, (now - last) / 1000);
+      last = now;
+      drawFrame(t);
+      raf = requestAnimationFrame(frame);
+    }
+    if (reduceMotion) { drawFrame(stillTime); return; }
+    drawFrame(0);
+    whenVisible(el,
+      () => { if (raf === null) { last = null; raf = requestAnimationFrame(frame); } },
+      () => { if (raf !== null) cancelAnimationFrame(raf); raf = null; });
+  }
+
+  function fitCanvas(canvas, w, h) {
+    const ratio = Math.min(2.5, window.devicePixelRatio || 1);
+    const cssW = canvas.clientWidth || w;
+    canvas.width = Math.round(cssW * ratio);
+    canvas.height = Math.round(cssW * ratio * h / w);
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(canvas.width / w, 0, 0, canvas.width / w, 0, 0);
+    return ctx;
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  /* ---------- Hero: range-only controller ---------- */
+  (function () {
+    const canvas = document.getElementById('orbit-canvas');
+    if (!canvas || !canvas.getContext) return;
+    const readout = document.getElementById('orbit-dist');
+    // Real trajectory, 0–14 s, sampled every 0.05 s (start 1.1 m, heading 330°).
+    const P = [[1.1,0],[1.123,-0.0097],[1.1476,-0.0138],[1.1725,-0.0125],[1.1967,-0.0063],[1.2193,0.0043],[1.2397,0.0187],[1.2573,0.0364],[1.2719,0.0567],[1.283,0.0791],[1.2907,0.1028],[1.2948,0.1275],[1.2955,0.1524],[1.2928,0.1773],[1.2871,0.2016],[1.2786,0.2251],[1.2676,0.2475],[1.2546,0.2689],[1.2398,0.289],[1.2235,0.3079],[1.2059,0.3258],[1.1874,0.3425],[1.168,0.3583],[1.1479,0.3731],[1.1272,0.3872],[1.1061,0.4005],[1.0845,0.4132],[1.0627,0.4254],[1.0405,0.437],[1.0182,0.4481],[0.9956,0.4589],[0.9729,0.4693],[0.95,0.4794],[0.927,0.4891],[0.9039,0.4986],[0.8806,0.5079],[0.8573,0.5169],[0.8339,0.5256],[0.8104,0.5341],[0.7868,0.5424],[0.7631,0.5505],[0.7394,0.5584],[0.7156,0.566],[0.6917,0.5734],[0.6678,0.5805],[0.6437,0.5875],[0.6196,0.5941],[0.5955,0.6005],[0.5712,0.6067],[0.5469,0.6125],[0.5226,0.6181],[0.4981,0.6234],[0.4736,0.6284],[0.4491,0.633],[0.4244,0.6374],[0.3998,0.6413],[0.375,0.645],[0.3503,0.6483],[0.3254,0.6513],[0.3006,0.654],[0.2757,0.6565],[0.2508,0.6589],[0.2259,0.6611],[0.201,0.6632],[0.1761,0.6652],[0.1512,0.6672],[0.1262,0.6691],[0.1013,0.671],[0.0764,0.6728],[0.0514,0.6746],[0.0265,0.6763],[0.0015,0.6778],[-0.0234,0.6793],[-0.0484,0.6805],[-0.0734,0.6815],[-0.0983,0.6822],[-0.1233,0.6826],[-0.1483,0.6825],[-0.1733,0.6819],[-0.1983,0.6807],[-0.2232,0.679],[-0.2481,0.6765],[-0.2729,0.6733],[-0.2976,0.6693],[-0.3221,0.6645],[-0.3465,0.6587],[-0.3705,0.652],[-0.3943,0.6444],[-0.4178,0.6358],[-0.4409,0.6262],[-0.4636,0.6157],[-0.4858,0.6043],[-0.5075,0.5919],[-0.5287,0.5787],[-0.5494,0.5645],[-0.5694,0.5495],[-0.5887,0.5337],[-0.6074,0.5172],[-0.6254,0.4998],[-0.6427,0.4817],[-0.6592,0.463],[-0.6749,0.4435],[-0.6899,0.4235],[-0.704,0.4028],[-0.7173,0.3817],[-0.7297,0.36],[-0.7413,0.3378],[-0.7519,0.3152],[-0.7617,0.2922],[-0.7707,0.2689],[-0.7787,0.2452],[-0.7858,0.2212],[-0.792,0.197],[-0.7973,0.1726],[-0.8017,0.148],[-0.8053,0.1232],[-0.8079,0.0984],[-0.8096,0.0734],[-0.8104,0.0484],[-0.8104,0.0234],[-0.8095,-0.0015],[-0.8077,-0.0265],[-0.805,-0.0513],[-0.8015,-0.0761],[-0.7972,-0.1007],[-0.7921,-0.1252],[-0.7861,-0.1495],[-0.7793,-0.1735],[-0.7718,-0.1973],[-0.7634,-0.2209],[-0.7543,-0.2442],[-0.7444,-0.2672],[-0.7338,-0.2898],[-0.7225,-0.3121],[-0.7105,-0.334],[-0.6978,-0.3555],[-0.6844,-0.3766],[-0.6703,-0.3973],[-0.6556,-0.4175],[-0.6403,-0.4373],[-0.6243,-0.4565],[-0.6078,-0.4752],[-0.5907,-0.4935],[-0.573,-0.5111],[-0.5548,-0.5283],[-0.536,-0.5448],[-0.5168,-0.5608],[-0.497,-0.5761],[-0.4768,-0.5908],[-0.4562,-0.6049],[-0.4351,-0.6184],[-0.4136,-0.6312],[-0.3918,-0.6433],[-0.3695,-0.6547],[-0.347,-0.6655],[-0.3241,-0.6755],[-0.3009,-0.6848],[-0.2774,-0.6935],[-0.2537,-0.7014],[-0.2298,-0.7085],[-0.2056,-0.715],[-0.1813,-0.7207],[-0.1568,-0.7257],[-0.1321,-0.73],[-0.1074,-0.7336],[-0.0826,-0.7364],[-0.0576,-0.7384],[-0.0327,-0.7398],[-0.0077,-0.7404],[0.0173,-0.7402],[0.0423,-0.7393],[0.0672,-0.7376],[0.0921,-0.7352],[0.1169,-0.732],[0.1416,-0.7281],[0.1661,-0.7234],[0.1905,-0.7179],[0.2147,-0.7117],[0.2387,-0.7047],[0.2625,-0.6969],[0.286,-0.6883],[0.3092,-0.679],[0.3321,-0.669],[0.3546,-0.6582],[0.3768,-0.6466],[0.3985,-0.6343],[0.4199,-0.6212],[0.4407,-0.6075],[0.4611,-0.593],[0.481,-0.5778],[0.5003,-0.562],[0.5191,-0.5455],[0.5373,-0.5284],[0.5549,-0.5106],[0.5719,-0.4923],[0.5883,-0.4734],[0.604,-0.4539],[0.619,-0.4339],[0.6333,-0.4134],[0.6469,-0.3925],[0.6598,-0.371],[0.6719,-0.3492],[0.6833,-0.3269],[0.6939,-0.3043],[0.7037,-0.2813],[0.7128,-0.258],[0.721,-0.2344],[0.7284,-0.2105],[0.735,-0.1864],[0.7408,-0.1621],[0.7458,-0.1376],[0.7499,-0.1129],[0.7532,-0.0882],[0.7557,-0.0633],[0.7573,-0.0383],[0.7581,-0.0133],[0.758,0.0116],[0.7571,0.0366],[0.7553,0.0616],[0.7527,0.0864],[0.7493,0.1112],[0.745,0.1358],[0.74,0.1603],[0.7341,0.1846],[0.7274,0.2087],[0.7199,0.2325],[0.7116,0.2561],[0.7025,0.2794],[0.6926,0.3024],[0.682,0.325],[0.6707,0.3473],[0.6586,0.3692],[0.6458,0.3907],[0.6323,0.4117],[0.6181,0.4323],[0.6032,0.4524],[0.5877,0.4719],[0.5715,0.491],[0.5547,0.5095],[0.5373,0.5275],[0.5193,0.5448],[0.5008,0.5616],[0.4817,0.5777],[0.4621,0.5932],[0.442,0.6081],[0.4214,0.6223],[0.4003,0.6357],[0.3789,0.6485],[0.357,0.6606],[0.3347,0.6719],[0.312,0.6825],[0.2891,0.6924],[0.2658,0.7014],[0.2422,0.7097],[0.2183,0.7173],[0.1943,0.724],[0.17,0.7299],[0.1455,0.7351],[0.1209,0.7394],[0.0961,0.7429],[0.0713,0.7456],[0.0464,0.7475],[0.0214,0.7485],[-0.0036,0.7488],[-0.0286,0.7482],[-0.0536,0.7468],[-0.0785,0.7446],[-0.1033,0.7415],[-0.128,0.7377],[-0.1525,0.733],[-0.1769,0.7276],[-0.2011,0.7213],[-0.2251,0.7142],[-0.2488,0.7064],[-0.2723,0.6977],[-0.2955,0.6883],[-0.3183,0.6782],[-0.3408,0.6673],[-0.3629,0.6556],[-0.3846,0.6432],[-0.4059,0.6301]];
+    const dt = 0.05, tEnd = (P.length - 1) * dt;
+    const endAngle = Math.atan2(P[P.length - 1][1], P[P.length - 1][0]);
+    const omega = 0.5 / 0.75, loop = 44, playback = 1.8;
+    let ctx = fitCanvas(canvas, 320, 320);
+    let lastSec = 0;
+    new ResizeObserver(() => { ctx = fitCanvas(canvas, 320, 320); draw(lastSec); }).observe(canvas);
+    const C = 160, S = 104; // 1 m = 104 px
+
+    function pos(t) {
+      if (t <= 0) return P[0];
+      if (t < tEnd) {
+        const i = Math.floor(t / dt), f = t / dt - i;
+        return [P[i][0] + (P[i + 1][0] - P[i][0]) * f, P[i][1] + (P[i + 1][1] - P[i][1]) * f];
+      }
+      const a = endAngle + omega * (t - tEnd);
+      return [0.75 * Math.cos(a), 0.75 * Math.sin(a)];
+    }
+    const X = p => C + p[0] * S, Y = p => C - p[1] * S;
+
+    function ring(r, fill, stroke, dash, width = 1.2) {
+      ctx.beginPath(); ctx.arc(C, C, r * S, 0, Math.PI * 2);
+      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+      if (stroke) { ctx.setLineDash(dash || []); ctx.lineWidth = width; ctx.strokeStyle = stroke; ctx.stroke(); ctx.setLineDash([]); }
+    }
+
+    function draw(seconds) {
+      lastSec = seconds;
+      const t = seconds;
+      ctx.clearRect(0, 0, 320, 320);
+      // Sensing zone
+      const g = ctx.createRadialGradient(C, C, 20, C, C, 1.4 * S);
+      g.addColorStop(0, '#eef2fd'); g.addColorStop(1, '#e1e8fa');
+      ring(1.4, g, '#a9b6da', null, 1.2);
+      // Grid inside sensing zone
+      ctx.save(); ctx.beginPath(); ctx.arc(C, C, 1.4 * S, 0, Math.PI * 2); ctx.clip();
+      ctx.strokeStyle = '#d3dcf3'; ctx.lineWidth = 0.6;
+      for (let k = -1.5; k <= 1.5; k += 0.25) {
+        ctx.beginPath(); ctx.moveTo(C + k * S, 0); ctx.lineTo(C + k * S, 320); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, C + k * S); ctx.lineTo(320, C + k * S); ctx.stroke();
+      }
+      ctx.restore();
+      ring(0.5, '#fbe7e1', '#d98872', [3, 4]);
+      ring(0.75, null, '#2346a8', [6, 5], 1.4);
+
+      // Path so far (faint record of the approach)
+      const shown = Math.min(t, tEnd);
+      ctx.beginPath(); ctx.moveTo(X(P[0]), Y(P[0]));
+      for (let s = dt; s <= shown; s += dt) { const p = pos(s); ctx.lineTo(X(p), Y(p)); }
+      ctx.strokeStyle = '#e9a92c55'; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.stroke();
+
+      // Bright fading trail (last 3 s)
+      const trail = 3, steps = 40;
+      for (let k = steps; k > 0; k--) {
+        const a = pos(Math.max(0, t - trail * k / steps)), b = pos(Math.max(0, t - trail * (k - 1) / steps));
+        ctx.beginPath(); ctx.moveTo(X(a), Y(a)); ctx.lineTo(X(b), Y(b));
+        ctx.strokeStyle = `rgba(233,169,44,${(1 - k / steps).toFixed(3)})`;
+        ctx.lineWidth = 1.5 + 3 * (1 - k / steps); ctx.lineCap = 'round'; ctx.stroke();
+      }
+
+      const p = pos(t), q = pos(t + 0.05);
+      const r = Math.hypot(p[0], p[1]);
+      // Range measurement: dashed line and ping
+      ctx.setLineDash([2, 4]); ctx.strokeStyle = '#13233f66'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(C, C); ctx.lineTo(X(p), Y(p)); ctx.stroke(); ctx.setLineDash([]);
+      const ping = ((performance.now() / 1000) % 1.6) / 1.6;
+      ctx.beginPath(); ctx.arc(C, C, 6 + ping * (r * S - 6), 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(35,70,168,${(0.45 * (1 - ping)).toFixed(3)})`; ctx.lineWidth = 1.5; ctx.stroke();
+
+      // Target
+      ctx.beginPath(); ctx.arc(C, C, 6, 0, Math.PI * 2); ctx.fillStyle = '#13233f'; ctx.fill();
+      ctx.beginPath(); ctx.arc(C, C, 2.2, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+
+      // Robot (differential drive, top view)
+      const heading = Math.atan2(-(q[1] - p[1]), q[0] - p[0]);
+      ctx.save(); ctx.translate(X(p), Y(p)); ctx.rotate(heading);
+      ctx.shadowColor = '#13233f55'; ctx.shadowBlur = 6; ctx.shadowOffsetY = 2;
+      ctx.beginPath(); ctx.arc(0, 0, 9, 0, Math.PI * 2); ctx.fillStyle = '#13233f'; ctx.fill();
+      ctx.shadowColor = 'transparent';
+      ctx.fillStyle = '#5d6b85'; ctx.fillRect(-4, -10.5, 8, 2.5); ctx.fillRect(-4, 8, 8, 2.5);
+      ctx.beginPath(); ctx.moveTo(8, 0); ctx.lineTo(1, -4.5); ctx.lineTo(1, 4.5); ctx.closePath();
+      ctx.fillStyle = '#e9a92c'; ctx.fill();
+      ctx.lineWidth = 1.6; ctx.strokeStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, 9, 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
+
+      if (readout) readout.value = r.toFixed(2) + ' m';
+    }
+    // Player: play/pause, step back/forward, speed and timeline.
+    const playBtn = document.getElementById('o-play'), scrub = document.getElementById('o-scrub');
+    const timeOut = document.getElementById('o-time'), phase = document.getElementById('orbit-phase');
+    const maxT = 40;
+    let simT = 0, speed = 2, playing = !reduceMotion, raf = null, last = null, onScreen = true;
+    const icons = { play: '<path d="M7 5l12 7-12 7z" fill="currentColor"/>', pause: '<path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/>' };
+    function render() {
+      draw(simT);
+      scrub.value = simT.toFixed(1);
+      scrub.style.setProperty('--p', (simT / maxT * 100).toFixed(1) + '%');
+      timeOut.value = simT.toFixed(1) + ' s';
+      const settled = simT > 11;
+      phase.textContent = settled ? 'Locked on the safe circle' : 'Approaching the target';
+      phase.classList.toggle('done', settled);
+    }
+    function setPlaying(p) {
+      playing = p;
+      playBtn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${p ? icons.pause : icons.play}</svg>`;
+      playBtn.setAttribute('aria-label', p ? 'Pause' : 'Play');
+      if (p && onScreen && raf === null) { last = null; raf = requestAnimationFrame(tick); }
+    }
+    function tick(now) {
+      if (last !== null) simT += Math.min(0.05, (now - last) / 1000) * speed;
+      last = now;
+      if (simT > maxT) simT = 0;
+      render();
+      raf = (playing && onScreen) ? requestAnimationFrame(tick) : null;
+    }
+    playBtn.addEventListener('click', () => setPlaying(!playing));
+    document.getElementById('o-back').addEventListener('click', () => { simT = Math.max(0, simT - 2); render(); });
+    document.getElementById('o-fwd').addEventListener('click', () => { simT = Math.min(maxT, simT + 2); render(); });
+    document.getElementById('o-restart').addEventListener('click', () => { simT = 0; render(); setPlaying(true); });
+    scrub.addEventListener('input', () => { simT = Number(scrub.value); render(); });
+    for (const b of document.querySelectorAll('.o-speed button')) {
+      b.addEventListener('click', () => {
+        speed = Number(b.dataset.speed);
+        for (const o of document.querySelectorAll('.o-speed button')) o.setAttribute('aria-pressed', String(o === b));
+      });
+    }
+    if (reduceMotion) simT = 30;
+    render(); setPlaying(playing);
+    whenVisible(canvas, () => { onScreen = true; setPlaying(playing); }, () => { onScreen = false; });
+  })();
+
+  /* ---------- Background: zig-zag curve ---------- */
+  (function () {
+    const wrap = document.getElementById('zz-wrap');
+    if (!wrap) return;
+    const svg = wrap.querySelector('svg');
+    const track = svg.querySelector('.zz-track'), path = svg.querySelector('.zz-path');
+    const grad = svg.querySelector('#zz-grad');
+    let drawn = reduceMotion;
+
+    function layout() {
+      const box = wrap.getBoundingClientRect();
+      const pts = [...wrap.querySelectorAll('.node')].map(n => {
+        const r = n.getBoundingClientRect();
+        return [r.left + r.width / 2 - box.left, r.top + r.height / 2 - box.top];
+      });
+      if (pts.length < 2) return;
+      let d = `M${pts[0][0]} ${pts[0][1] - 26} C${pts[0][0]} ${pts[0][1] - 13} ${pts[0][0]} ${pts[0][1] - 6} ${pts[0][0]} ${pts[0][1]}`;
+      for (let i = 1; i < pts.length; i++) {
+        const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], k = (y1 - y0) * 0.55;
+        d += ` C${x0} ${y0 + k} ${x1} ${y1 - k} ${x1} ${y1}`;
+      }
+      const [xl, yl] = pts[pts.length - 1];
+      d += ` C${xl} ${yl + 20} ${xl} ${yl + 30} ${xl} ${yl + 40}`;
+      track.setAttribute('d', d); path.setAttribute('d', d);
+      grad.setAttribute('y1', pts[0][1]); grad.setAttribute('y2', yl);
+      const len = path.getTotalLength();
+      path.style.strokeDasharray = len;
+      path.style.strokeDashoffset = drawn ? 0 : len;
+    }
+    layout();
+    new ResizeObserver(layout).observe(wrap);
+    if (!drawn) whenVisible(wrap, () => { if (!drawn) { drawn = true; requestAnimationFrame(() => { path.style.strokeDashoffset = 0; }); } }, () => {});
+  })();
+
+  /* ---------- Research simulations ---------- */
+  const W = 320, H = 180;
+
+  // Hospital corridor: a delivery robot keeps a safety margin around people.
+  function hospitalSim(canvas) {
+    let ctx = fitCanvas(canvas, W, H);
+    new ResizeObserver(() => { ctx = fitCanvas(canvas, W, H); if (typeof draw === 'function') draw(lastT); }).observe(canvas);
+    const top = 38, bottom = 142, lane = 90;
+    const people = [
+      { x: 250, y0: 72, vx: -15, ph: 0, c: '#3aa39a' },
+      { x: 60, y0: 112, vx: 11, ph: 2, c: '#7d6bc2' },
+      { x: 330, y0: 100, vx: -12, ph: 4, c: '#d07a5a' },
+    ];
+    const bed = { x: 196, y: 42, w: 46, h: 18 };
+    const cart = { x: 64, y: 124, w: 18, h: 14 };
+    const fixed = [[204, 51], [219, 51], [234, 51], [73, 131]];
+    const robot = { x: -10, y: lane, v: 40, clear: 99 };
+    let lastT = 0;
+
+    function step(dt, t) {
+      for (const p of people) {
+        p.x += p.vx * dt;
+        if (p.x < -20) p.x = 340; if (p.x > 340) p.x = -20;
+        const away = Math.abs(p.x - robot.x) < 30 ? Math.sign(p.y0 - robot.y || 1) * 6 : 0;
+        p.y = p.y0 + 3 * Math.sin(t * 0.9 + p.ph) + away;
+      }
+      const obs = people.map(p => [p.x, p.y]).concat(fixed);
+      let push = 0, dmin = 99;
+      for (const [ox, oy] of obs) {
+        const dx = ox - robot.x, dy = robot.y - oy;
+        dmin = Math.min(dmin, Math.hypot(dx, dy));
+        if (dx > -18 && dx < 80 && Math.abs(dy) < 46) {
+          const w = dx < 0 ? 1 : 1 - dx / 80;
+          push += (dy >= 0 ? 1 : -1) * (46 - Math.abs(dy)) * w * 0.9;
+        }
+      }
+      const target = Math.max(top + 16, Math.min(bottom - 16, lane + push));
+      robot.y += (target - robot.y) * Math.min(1, 2.4 * dt);
+      const want = 40 * Math.max(0.25, Math.min(1, (dmin - 16) / 30));
+      robot.v += (want - robot.v) * Math.min(1, 3 * dt);
+      robot.x += robot.v * dt;
+      robot.clear = dmin;
+      if (robot.x > 345) robot.x = -25;
+    }
+
+    function person(x, y, c, dir) {
+      ctx.save(); ctx.translate(x, y);
+      ctx.fillStyle = '#13233f22'; ctx.beginPath(); ctx.ellipse(1, 2, 8, 6, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = c; ctx.beginPath(); ctx.ellipse(0, 0, 5, 7.5, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#3b2a22'; ctx.beginPath(); ctx.arc(dir * 1, 0, 3.4, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+
+    function draw(t) {
+      const dt = Math.max(0, Math.min(0.05, t - lastT)); lastT = t;
+      if (dt > 0) step(dt, t);
+      // Rooms
+      ctx.fillStyle = '#dde3ea'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#eef1f5'; ctx.fillRect(0, top, W, bottom - top);
+      ctx.strokeStyle = '#e1e6ec'; ctx.lineWidth = 0.6;
+      for (let x = 0; x < W; x += 16) { ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bottom); ctx.stroke(); }
+      for (let y = top; y < bottom; y += 16) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+      for (let i = 0; i < 4; i++) {
+        ctx.fillStyle = '#e8ecf1'; ctx.fillRect(i * 82 + 4, 4, 74, top - 8); ctx.fillRect(i * 82 + 30, bottom + 4, 74, H - bottom - 8);
+        ctx.fillStyle = '#c4ccd8'; ctx.fillRect(i * 82 + 12, 10, 26, 12); ctx.fillRect(i * 82 + 60, bottom + 14, 26, 12);
+        ctx.fillStyle = '#9fb3d9'; ctx.fillRect(i * 82 + 12, 16, 26, 6); ctx.fillRect(i * 82 + 60, bottom + 20, 26, 6);
+      }
+      ctx.strokeStyle = '#7d8aa0'; ctx.lineWidth = 2.5;
+      for (const y of [top, bottom]) {
+        const off = y === top ? 0 : 26;
+        for (let i = -1; i < 5; i++) { ctx.beginPath(); ctx.moveTo(i * 82 + off + 58, y); ctx.lineTo(i * 82 + off + 82 + 46, y); ctx.stroke(); }
+      }
+      // Bed and cart
+      ctx.fillStyle = '#ffffff'; roundRect(ctx, bed.x, bed.y, bed.w, bed.h, 3); ctx.fill();
+      ctx.strokeStyle = '#aab4c3'; ctx.lineWidth = 1; ctx.stroke();
+      ctx.fillStyle = '#8fb0e6'; ctx.fillRect(bed.x + 14, bed.y + 2, bed.w - 16, bed.h - 4);
+      ctx.fillStyle = '#f3f5f8'; ctx.fillRect(bed.x + 3, bed.y + 4, 9, bed.h - 8);
+      ctx.fillStyle = '#c8cfda'; roundRect(ctx, cart.x, cart.y, cart.w, cart.h, 2); ctx.fill();
+      ctx.fillStyle = '#e46a6a'; ctx.fillRect(cart.x + 6, cart.y + 4, 6, 6);
+      // Lane hint
+      ctx.setLineDash([4, 6]); ctx.strokeStyle = '#2346a833'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, lane); ctx.lineTo(W, lane); ctx.stroke(); ctx.setLineDash([]);
+      for (const p of people) person(p.x, p.y, p.c, Math.sign(p.vx));
+      // Robot with safety bubble
+      const safe = robot.clear > 42, col = safe ? '79,209,139' : '233,169,44';
+      ctx.beginPath(); ctx.arc(robot.x, robot.y, 24, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${col},0.16)`; ctx.fill();
+      ctx.setLineDash([3, 3]); ctx.strokeStyle = `rgba(${col},0.9)`; ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
+      ctx.save(); ctx.translate(robot.x, robot.y);
+      ctx.fillStyle = '#13233f33'; roundRect(ctx, -8, -6, 18, 15, 4); ctx.fill();
+      ctx.fillStyle = '#ffffff'; roundRect(ctx, -9, -8, 18, 16, 4); ctx.fill();
+      ctx.strokeStyle = '#2346a8'; ctx.lineWidth = 1.4; ctx.stroke();
+      ctx.fillStyle = '#2346a8'; roundRect(ctx, -6, -5, 9, 10, 2); ctx.fill();
+      ctx.fillStyle = '#e9a92c'; ctx.beginPath(); ctx.arc(5, 0, 2.2, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      // Status
+      const m = Math.max(0, (robot.clear - 14) / 36);
+      ctx.font = '600 8.5px "IBM Plex Sans", system-ui, sans-serif';
+      const label = `Speed ${(robot.v / 36).toFixed(1)} m/s · Gap ${Math.min(m, 9.9).toFixed(1)} m`, lw = ctx.measureText(label).width + 14;
+      ctx.fillStyle = '#13233fd9'; roundRect(ctx, W - lw - 6, H - 22, lw, 16, 8); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.fillText(label, W - lw + 1, H - 11);
+    }
+    if (reduceMotion) { for (let i = 0; i < 160; i++) draw(i * 0.05); }
+    animate(canvas, draw, 8);
+  }
+
+  // Warehouse: four robots share aisles and take turns at crossings.
+  function warehouseSim(canvas) {
+    let ctx = fitCanvas(canvas, W, H);
+    new ResizeObserver(() => { ctx = fitCanvas(canvas, W, H); if (typeof draw === 'function') draw(lastT); }).observe(canvas);
+    const xs = [36, 160, 284], ys = [28, 152];
+    const loopA = [[xs[0], ys[0]], [xs[1], ys[0]], [xs[1], ys[1]], [xs[0], ys[1]]];   // clockwise
+    const loopB = [[xs[2], ys[0]], [xs[1], ys[0]], [xs[1], ys[1]], [xs[2], ys[1]]];   // counter-clockwise
+    function makeLoop(pts) {
+      const segs = []; let L = 0;
+      for (let i = 0; i < pts.length; i++) {
+        const a = pts[i], b = pts[(i + 1) % pts.length], len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        segs.push({ a, b, len, s0: L }); L += len;
+      }
+      return { segs, L };
+    }
+    const A = makeLoop(loopA), B = makeLoop(loopB);
+    const robots = [
+      { id: 0, loop: A, s: 30, c: '#2346a8', box: '#e9a92c' },
+      { id: 1, loop: B, s: 10, c: '#1f7a52', box: '#d9774f' },
+      { id: 2, loop: A, s: 270, c: '#2346a8', box: '#c99a5b' },
+      { id: 3, loop: B, s: 250, c: '#1f7a52', box: '#e9a92c' },
+    ];
+    function place(r) {
+      const s = ((r.s % r.loop.L) + r.loop.L) % r.loop.L;
+      const g = r.loop.segs.find(g => s >= g.s0 && s < g.s0 + g.len) || r.loop.segs[0];
+      const f = (s - g.s0) / g.len;
+      r.x = g.a[0] + (g.b[0] - g.a[0]) * f; r.y = g.a[1] + (g.b[1] - g.a[1]) * f;
+      r.dx = (g.b[0] - g.a[0]) / g.len; r.dy = (g.b[1] - g.a[1]) / g.len;
+    }
+    robots.forEach(place);
+    robots.forEach(r => { r.cruise = r.loop === A ? 30 : 23; });
+    let lastT = 0;
+
+    function step(dt) {
+      for (const r of robots) {
+        r.wait = false;
+        for (const o of robots) {
+          if (o === r) continue;
+          const rx = o.x - r.x, ry = o.y - r.y, d = Math.hypot(rx, ry);
+          if (d > 38 || d < 0.01) continue;
+          const ahead = (rx * r.dx + ry * r.dy) / d;
+          const sameWay = r.dx * o.dx + r.dy * o.dy > 0.3;
+          if (ahead > 0.5 && o.id < r.id && !(sameWay && ahead < 0.9)) r.wait = true;
+          if (ahead > 0.9 && sameWay && d < 32) r.wait = true;
+        }
+      }
+      for (const r of robots) {
+        r.v = (r.v ?? 30) + ((r.wait ? 0 : r.cruise) - (r.v ?? 30)) * Math.min(1, 6 * dt);
+        r.s += r.v * dt; place(r);
+      }
+    }
+
+    function draw(t) {
+      const dt = Math.max(0, Math.min(0.05, t - lastT)); lastT = t;
+      if (dt > 0) step(dt);
+      ctx.fillStyle = '#e4e6ea'; ctx.fillRect(0, 0, W, H);
+      // concrete speckle
+      ctx.fillStyle = '#d9dce1';
+      for (let i = 0; i < 90; i++) { const a = (i * 97) % W, b = (i * 53) % H; ctx.fillRect(a, b, 2, 2); }
+      // Racks
+      for (const [x0, x1] of [[50, 146], [174, 270]]) {
+        for (const y of [42, 76, 106]) {
+          ctx.fillStyle = '#3b4659'; ctx.fillRect(x0, y, x1 - x0, 26);
+          ctx.fillStyle = '#5b6b85'; ctx.fillRect(x0 + 1, y + 12, x1 - x0 - 2, 2);
+          for (let x = x0 + 3; x < x1 - 10; x += 12) {
+            const hue = ((x * 7 + y * 3) % 5);
+            ctx.fillStyle = ['#c99a5b', '#b8864a', '#d7ac6e', '#a87b45', '#cfa064'][hue];
+            ctx.fillRect(x, y + 2, 10, 9); ctx.fillRect(x + 1, y + 15, 9, 9);
+          }
+        }
+      }
+      // Lane markings
+      ctx.strokeStyle = '#e9b93c'; ctx.lineWidth = 1.2; ctx.setLineDash([6, 5]);
+      for (const y of ys) { ctx.beginPath(); ctx.moveTo(14, y); ctx.lineTo(W - 14, y); ctx.stroke(); }
+      for (const x of xs) { ctx.beginPath(); ctx.moveTo(x, 12); ctx.lineTo(x, H - 12); ctx.stroke(); }
+      ctx.setLineDash([]);
+      // Crossing zones
+      ctx.fillStyle = '#e9a92c22';
+      for (const x of xs) for (const y of ys) ctx.fillRect(x - 11, y - 11, 22, 22);
+      // Robots
+      for (const r of robots) {
+        if (r.wait) {
+          ctx.beginPath(); ctx.arc(r.x, r.y, 14, 0, Math.PI * 2);
+          ctx.strokeStyle = '#e9a92c'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]); ctx.stroke(); ctx.setLineDash([]);
+        } else {
+          ctx.strokeStyle = r.c + '66'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(r.x, r.y); ctx.lineTo(r.x + r.dx * 22, r.y + r.dy * 22); ctx.stroke();
+        }
+        ctx.save(); ctx.translate(r.x, r.y); ctx.rotate(Math.atan2(r.dy, r.dx));
+        ctx.fillStyle = '#13233f40'; roundRect(ctx, -8, -6, 17, 15, 3); ctx.fill();
+        ctx.fillStyle = r.c; roundRect(ctx, -9, -8, 18, 16, 3); ctx.fill();
+        ctx.fillStyle = r.box; ctx.fillRect(-6, -5, 10, 10);
+        ctx.strokeStyle = '#00000033'; ctx.lineWidth = .8; ctx.strokeRect(-6, -5, 10, 10);
+        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(6.5, 0, 1.6, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+      const waiting = robots.filter(r => r.wait).length;
+      ctx.font = '600 8.5px "IBM Plex Sans", system-ui, sans-serif';
+      const label = `4 robots · ${waiting} giving way`, lw = ctx.measureText(label).width + 14;
+      ctx.fillStyle = '#13233fd9'; roundRect(ctx, W - lw - 6, H - 22, lw, 16, 8); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.fillText(label, W - lw + 1, H - 11);
+    }
+    if (reduceMotion) { for (let i = 0; i < 100; i++) draw(i * 0.05); }
+    animate(canvas, draw, 5);
+  }
+
+  // Camera feed: detections stay confident on clear frames and hold back on noisy ones.
+  function cameraSim(canvas) {
+    let ctx = fitCanvas(canvas, W, H);
+    new ResizeObserver(() => { ctx = fitCanvas(canvas, W, H); if (typeof draw === 'function') draw(lastT); }).observe(canvas);
+    const VX = 160, BY = 84;
+    const walkers = [
+      { X: -0.55, z: 3.4, vz: -0.32, c: '#4b5f86' },
+      { X: 0.5, z: 5.6, vz: -0.25, c: '#7a5a4b' },
+      { X: 0.1, z: 2.2, vz: 0.22, c: '#3d7a6e' },
+    ];
+    const history = [];
+    let lastT = 0, seed = 1;
+    const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+    function draw(t) {
+      const dt = Math.max(0, Math.min(0.05, t - lastT)); lastT = t;
+      for (const w of walkers) {
+        w.z += w.vz * dt;
+        if (w.z < 1.5) w.z = 6.5; if (w.z > 6.5) w.z = 1.5;
+      }
+      const cyc = t % 7, noisy = cyc > 4.6 && cyc < 6;
+      // Scene
+      ctx.fillStyle = '#dfe4ea'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W, 0); ctx.lineTo(200, 40); ctx.lineTo(120, 40); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#ccd3dc'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(120, 40); ctx.lineTo(120, BY); ctx.lineTo(0, H); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#c3cbd6'; ctx.beginPath(); ctx.moveTo(W, 0); ctx.lineTo(200, 40); ctx.lineTo(200, BY); ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#b4bfcc'; ctx.fillRect(120, 40, 80, BY - 40);
+      ctx.fillStyle = '#93a2b6'; ctx.fillRect(150, 52, 20, 32);
+      ctx.fillStyle = '#7fb3a0'; ctx.fillRect(152, 46, 16, 4);
+      ctx.fillStyle = '#e8e3da'; ctx.beginPath(); ctx.moveTo(120, BY); ctx.lineTo(200, BY); ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = '#d6d0c5'; ctx.lineWidth = .8;
+      for (let k = -4; k <= 4; k++) { ctx.beginPath(); ctx.moveTo(VX + k * 10, BY); ctx.lineTo(VX + k * 80, H); ctx.stroke(); }
+      for (let z = 1.5; z < 7; z += 0.8) { const y = BY + 96 / z; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+      ctx.fillStyle = '#f7f9fc';
+      for (let z = 1.3; z < 7; z += 1.1) { const y = 40 - 40 / z, s = 1 / z; ctx.fillRect(VX - 22 * s, 40 - 34 * s - 2, 44 * s, 4 * s + 1); }
+      // Doors on side walls
+      ctx.fillStyle = '#a9b6c6';
+      ctx.beginPath(); ctx.moveTo(40, 22); ctx.lineTo(70, 30); ctx.lineTo(70, 118); ctx.lineTo(40, 136); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(280, 22); ctx.lineTo(250, 30); ctx.lineTo(250, 118); ctx.lineTo(280, 136); ctx.closePath(); ctx.fill();
+
+      // People, far to near
+      const dets = [];
+      for (const w of [...walkers].sort((a, b) => b.z - a.z)) {
+        const s = 1 / w.z, foot = BY + 96 * s, h = 150 * s, x = VX + w.X * 150 * s;
+        ctx.fillStyle = '#00000018'; ctx.beginPath(); ctx.ellipse(x, foot, h * .16, h * .04, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#39414f'; ctx.fillRect(x - h * .07, foot - h * .45, h * .055, h * .45); ctx.fillRect(x + h * .015, foot - h * .45, h * .055, h * .45);
+        ctx.fillStyle = w.c; roundRect(ctx, x - h * .12, foot - h * .82, h * .24, h * .42, h * .06); ctx.fill();
+        ctx.fillStyle = '#c99b7a'; ctx.beginPath(); ctx.arc(x, foot - h * .9, h * .085, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#2a2320'; ctx.beginPath(); ctx.arc(x, foot - h * .93, h * .085, Math.PI, 0); ctx.fill();
+        dets.push({ x, foot, h, conf: noisy ? 0.32 + 0.12 * Math.abs(Math.sin(t * 3 + w.X * 9)) : 0.9 + 0.07 * Math.abs(Math.sin(t + w.z)) });
+      }
+      if (noisy) {
+        ctx.fillStyle = '#ffffff24'; ctx.fillRect(0, 0, W, H);
+        seed = Math.floor(t * 20) + 7;
+        for (let i = 0; i < 520; i++) { const g = Math.floor(rand() * 255); ctx.fillStyle = `rgba(${g},${g},${g},0.5)`; ctx.fillRect(rand() * W, rand() * H, 2, 2); }
+        for (let i = 0; i < 3; i++) { ctx.fillStyle = '#ffffff40'; ctx.fillRect(0, rand() * H, W, 2 + rand() * 4); }
+      }
+      // Detections
+      ctx.font = '600 8px "IBM Plex Sans", system-ui, sans-serif';
+      const placed = [];
+      for (const d of [...dets].reverse()) {
+        const bw = d.h * .32, bx = d.x - bw / 2, by = d.foot - d.h * 1.0, col = d.conf > 0.6 ? '#2f6bff' : '#e9a92c';
+        ctx.strokeStyle = col; ctx.lineWidth = 1.4; ctx.setLineDash(d.conf > 0.6 ? [] : [3, 3]);
+        ctx.strokeRect(bx, by, bw, d.h); ctx.setLineDash([]);
+        const label = `person ${d.conf.toFixed(2)}`, lw = ctx.measureText(label).width + 6;
+        let ly = by - 11;
+        for (const q of placed) if (bx < q.x + q.w && bx + lw > q.x && ly < q.y + 11 && ly + 11 > q.y) ly = q.y - 12;
+        placed.push({ x: bx, y: ly, w: lw });
+        ctx.fillStyle = col; ctx.fillRect(bx, ly, lw, 11);
+        ctx.fillStyle = d.conf > 0.6 ? '#fff' : '#13233f'; ctx.fillText(label, bx + 3, ly + 8);
+      }
+      // Status badge
+      const msg = noisy ? 'Noisy input: waiting, not guessing' : 'Clear input: 3 people found';
+      ctx.font = '600 8.5px "IBM Plex Sans", system-ui, sans-serif';
+      const mw = ctx.measureText(msg).width + 22;
+      ctx.fillStyle = '#13233fd9'; roundRect(ctx, W - mw - 6, H - 22, mw, 16, 8); ctx.fill();
+      ctx.fillStyle = noisy ? '#e9a92c' : '#4fd18b'; ctx.beginPath(); ctx.arc(W - mw + 4, H - 14, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.fillText(msg, W - mw + 11, H - 11);
+      // Confidence sparkline
+      if (dt > 0) { history.push(dets.reduce((a, d) => a + d.conf, 0) / dets.length); if (history.length > 120) history.shift(); }
+      ctx.fillStyle = '#13233fb3'; roundRect(ctx, W - 86, 8, 78, 30, 5); ctx.fill();
+      ctx.fillStyle = '#c9d4f6'; ctx.font = '600 7px "IBM Plex Sans", system-ui, sans-serif'; ctx.fillText('Confidence', W - 81, 17);
+      ctx.strokeStyle = '#ffffff55'; ctx.setLineDash([2, 2]); ctx.lineWidth = .7;
+      ctx.beginPath(); ctx.moveTo(W - 82, 34 - 0.6 * 14); ctx.lineTo(W - 12, 34 - 0.6 * 14); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = '#4fd18b'; ctx.lineWidth = 1.2; ctx.beginPath();
+      history.forEach((v, i) => { const x = W - 82 + i * 70 / 120, y = 34 - v * 14; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+      ctx.stroke();
+    }
+    if (reduceMotion) { for (let i = 0; i < 60; i++) draw(i * 0.05); }
+    animate(canvas, draw, 3);
+  }
+
+  // Unicycle robot reaching a goal past several obstacles, with wind-like disturbances.
+  function unicycleSim(canvas) {
+    let ctx = fitCanvas(canvas, W, H), lastT = 0;
+    new ResizeObserver(() => { ctx = fitCanvas(canvas, W, H); draw(lastT); }).observe(canvas);
+    const obs = [[92, 62, 14], [128, 122, 16], [180, 74, 15], [228, 118, 14], [252, 52, 12]];
+    const goal = [298, 88], margin = 9;
+    let r, trail, done, minGap, seed = 2;
+    function reset() { r = { x: 20, y: 96, th: 0 }; trail = []; done = 0; minGap = 99; seed += 1; }
+    reset();
+    function step(dt, t) {
+      if (done) { done += dt; if (done > 1.6) reset(); return; }
+      let ux = goal[0] - r.x, uy = goal[1] - r.y; const dg = Math.hypot(ux, uy);
+      if (dg < 6) { done = 0.001; return; }
+      ux = ux / dg * 34; uy = uy / dg * 34;
+      for (const [ox, oy, rad] of obs) {
+        const dx = r.x - ox, dy = r.y - oy, d = Math.hypot(dx, dy), safe = rad + margin;
+        minGap = Math.min(minGap, d - rad);
+        if (d < safe + 32) {
+          const nx = dx / d, ny = dy / d, into = -(ux * nx + uy * ny);
+          const w = Math.max(0, Math.min(1, 1 - (d - safe) / 32));
+          if (into > 0) { ux += into * nx * (0.6 + 0.6 * w); uy += into * ny * (0.6 + 0.6 * w); }
+          const side = (nx * (goal[1] - oy) - ny * (goal[0] - ox)) >= 0 ? 1 : -1;
+          ux += -ny * side * 20 * w; uy += nx * side * 20 * w;
+          if (d < safe) { ux += nx * 40; uy += ny * 40; }
+        }
+      }
+      const wind = 7 * Math.sin(t * 1.3 + seed) + 4 * Math.sin(t * 3.1 + seed * 2);
+      const want = Math.atan2(uy, ux);
+      let err = Math.atan2(Math.sin(want - r.th), Math.cos(want - r.th));
+      r.th += Math.max(-3, Math.min(3, 4 * err)) * dt;
+      const v = Math.min(34, Math.hypot(ux, uy)) * Math.max(0.2, Math.cos(err));
+      r.x += (v * Math.cos(r.th)) * dt; r.y += (v * Math.sin(r.th) + wind) * dt;
+      trail.push([r.x, r.y]); if (trail.length > 400) trail.shift();
+    }
+    function draw(t) {
+      const dt = Math.max(0, Math.min(0.05, t - lastT)); lastT = t;
+      if (dt > 0) step(dt, t);
+      ctx.fillStyle = '#f3f5f9'; ctx.fillRect(0, 0, W, H);
+      ctx.strokeStyle = '#e2e7f0'; ctx.lineWidth = .6;
+      for (let x = 0; x < W; x += 20) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+      for (let y = 0; y < H; y += 20) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+      // wind arrows
+      ctx.strokeStyle = '#7f95d655'; ctx.lineWidth = 1.2;
+      const wy = Math.sin(t * 1.3 + seed) >= 0 ? 1 : -1;
+      for (let i = 0; i < 7; i++) {
+        const x = (i * 47 + t * 25) % (W + 20) - 10, y = 20 + (i * 37) % 140;
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 4, y + wy * 12); ctx.lineTo(x + 7, y + wy * 8); ctx.stroke();
+      }
+      for (const [ox, oy, rad] of obs) {
+        ctx.beginPath(); ctx.arc(ox, oy, rad + margin, 0, Math.PI * 2); ctx.fillStyle = '#d988721f'; ctx.fill();
+        ctx.setLineDash([3, 3]); ctx.strokeStyle = '#d98872'; ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
+        ctx.beginPath(); ctx.arc(ox, oy, rad, 0, Math.PI * 2); ctx.fillStyle = '#5b6b85'; ctx.fill();
+      }
+      ctx.fillStyle = '#1f7a52'; ctx.fillRect(goal[0] - 1, goal[1] - 16, 2, 16);
+      ctx.beginPath(); ctx.moveTo(goal[0] + 1, goal[1] - 16); ctx.lineTo(goal[0] + 12, goal[1] - 12); ctx.lineTo(goal[0] + 1, goal[1] - 8); ctx.fill();
+      if (trail.length > 1) { ctx.beginPath(); ctx.moveTo(trail[0][0], trail[0][1]); for (const p of trail) ctx.lineTo(p[0], p[1]); ctx.strokeStyle = '#e9a92c'; ctx.lineWidth = 2.2; ctx.stroke(); }
+      ctx.save(); ctx.translate(r.x, r.y); ctx.rotate(r.th);
+      ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI * 2); ctx.fillStyle = '#13233f'; ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.fillStyle = '#e9a92c'; ctx.beginPath(); ctx.moveTo(6, 0); ctx.lineTo(0, -3.5); ctx.lineTo(0, 3.5); ctx.fill();
+      ctx.restore();
+      ctx.font = '600 8.5px "IBM Plex Sans", system-ui, sans-serif';
+      const label = done ? 'Goal reached safely' : `Wind on · closest gap ${(Math.max(0, minGap) / 30).toFixed(2)} m`;
+      const lw = ctx.measureText(label).width + 14;
+      ctx.fillStyle = '#13233fd9'; roundRect(ctx, W - lw - 6, H - 22, lw, 16, 8); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.fillText(label, W - lw + 1, H - 11);
+    }
+    if (reduceMotion) { for (let i = 0; i < 160; i++) draw(i * 0.05); }
+    animate(canvas, draw, 8);
+  }
+
+  // A language model writes a reply; a barrier keeps its safety score above a strict margin.
+  function llmSim(canvas) {
+    let ctx = fitCanvas(canvas, W, H), lastT = 0;
+    new ResizeObserver(() => { ctx = fitCanvas(canvas, W, H); draw(lastT); }).observe(canvas);
+    const words = [['I', .9], ['understand', .88], ['this', .86], ['is', .84], [['stupid', 'frustrating'], .74, .12], ['for', .8], ['you.', .83],
+      ['Let’s', .85], [['ignore', 'fix'], .79, .2], ['it', .84], ['together,', .87], ['step', .88], ['by', .89], ['step.', .9]];
+    const per = 0.42, total = words.length * per + 2.6, margin = 0.35;
+    function draw(t) {
+      lastT = t;
+      const s = t % total, shown = Math.min(words.length, Math.floor(s / per) + 1);
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H);
+      // prompt bubble
+      ctx.font = '500 9px "IBM Plex Sans", system-ui, sans-serif';
+      ctx.fillStyle = '#e7ecfb'; roundRect(ctx, 10, 10, 182, 20, 8); ctx.fill();
+      ctx.fillStyle = '#2346a8'; ctx.fillText('User: “This app keeps crashing!”', 18, 23);
+      // reply
+      ctx.font = '600 11px "IBM Plex Sans", system-ui, sans-serif';
+      let x = 14, y = 50;
+      for (let i = 0; i < shown; i++) {
+        const w = words[i], swap = Array.isArray(w[0]);
+        const age = s - i * per;
+        let text = swap ? (age < 0.55 ? w[0][0] : w[0][1]) : w[0];
+        const ww = ctx.measureText(text + ' ').width;
+        if (x + ww > W - 14) { x = 14; y += 17; }
+        if (swap && age < 0.55) {
+          ctx.fillStyle = '#d9483b'; ctx.fillText(text, x, y);
+          ctx.strokeStyle = '#d9483b'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x, y - 4); ctx.lineTo(x + ctx.measureText(text).width, y - 4); ctx.stroke();
+        } else {
+          ctx.fillStyle = swap ? '#1f7a52' : '#13233f'; ctx.fillText(text, x, y);
+        }
+        x += ww;
+      }
+      // chart
+      const cx0 = 14, cx1 = W - 14, cy0 = 104, cy1 = H - 16;
+      const Y = v => cy1 - v * (cy1 - cy0), X = i => cx0 + (i / (words.length - 1)) * (cx1 - cx0);
+      ctx.fillStyle = '#d988721f'; ctx.fillRect(cx0, Y(margin), cx1 - cx0, cy1 - Y(margin));
+      ctx.setLineDash([4, 3]); ctx.strokeStyle = '#d98872'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(cx0, Y(margin)); ctx.lineTo(cx1, Y(margin)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.font = '600 7.5px "IBM Plex Sans", system-ui, sans-serif';
+      ctx.fillStyle = '#b5604a'; ctx.fillText('Strict safety margin', cx1 - 76, Y(margin) + 10);
+      ctx.fillStyle = '#546074'; ctx.fillText('Safety score', cx0, cy0 - 4);
+      ctx.beginPath();
+      for (let i = 0; i < shown; i++) {
+        const w = words[i];
+        if (Array.isArray(w[0])) {
+          ctx.save(); ctx.setLineDash([2, 2]); ctx.strokeStyle = '#d9483b99';
+          ctx.beginPath(); ctx.moveTo(X(i - 1), Y(words[i - 1][1])); ctx.lineTo(X(i), Y(w[2])); ctx.stroke();
+          ctx.beginPath(); ctx.arc(X(i), Y(w[2]), 2.2, 0, Math.PI * 2); ctx.fillStyle = '#d9483b'; ctx.fill();
+          ctx.restore();
+        }
+      }
+      ctx.beginPath();
+      for (let i = 0; i < shown; i++) { const v = words[i][1]; i ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v)); }
+      ctx.strokeStyle = '#2346a8'; ctx.lineWidth = 2; ctx.stroke();
+      for (let i = 0; i < shown; i++) { ctx.beginPath(); ctx.arc(X(i), Y(words[i][1]), 1.8, 0, Math.PI * 2); ctx.fillStyle = '#2346a8'; ctx.fill(); }
+    }
+    animate(canvas, draw, 99);
+  }
+
+  const sims = { hospital: hospitalSim, warehouse: warehouseSim, camera: cameraSim, unicycle: unicycleSim, llm: llmSim };
+  for (const c of document.querySelectorAll('canvas.sim')) {
+    if (c.getContext && sims[c.dataset.sim]) sims[c.dataset.sim](c);
+  }
+</script>
+<script>
+  // Hidden-attack videos: robot switcher, autoplay only while visible.
+  (function () {
+    const nominal = document.getElementById('rl-nominal'), attacked = document.getElementById('rl-attacked');
+    const compare = document.getElementById('rl-compare'), toggle = document.getElementById('rl-data-toggle'), data = document.getElementById('rl-data');
+    if (!nominal) return;
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let visible = false;
+    function play() { if (!calm && visible) for (const v of [nominal, attacked]) v.play().catch(() => {}); }
+    function setSrc(video, src, poster) { video.poster = poster; video.querySelector('source').src = src; video.load(); }
+    function choose(robot) {
+      setSrc(nominal, `media/rl/${robot}_mujoco_nominal.mp4`, `media/rl/${robot}_nominal.jpg`);
+      setSrc(attacked, `media/rl/${robot}_mujoco_perturbed.mp4`, `media/rl/${robot}_perturbed.jpg`);
+      setSrc(compare, `media/rl/${robot}_comparison_3way.mp4`, `media/rl/${robot}_comparison.jpg`);
+      nominal.addEventListener('loadeddata', () => { attacked.currentTime = 0; nominal.currentTime = 0; play(); }, { once: true });
+      if (!data.hidden && !calm) compare.play().catch(() => {});
+    }
+    for (const b of document.querySelectorAll('.r-tabs button')) {
+      b.addEventListener('click', () => {
+        for (const o of document.querySelectorAll('.r-tabs button')) o.setAttribute('aria-pressed', String(o === b));
+        choose(b.dataset.robot);
+      });
+    }
+    toggle.addEventListener('click', () => {
+      const open = data.hidden;
+      data.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.textContent = open ? 'Hide attack data' : 'Show attack data';
+      if (open && !calm) compare.play().catch(() => {}); else compare.pause();
+    });
+    if (calm) { nominal.controls = attacked.controls = true; }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([e]) => {
+        visible = e.isIntersecting;
+        if (visible) play(); else { nominal.pause(); attacked.pause(); }
+      }, { threshold: 0.3 }).observe(nominal);
+    } else { visible = true; play(); }
+  })();
+</script>
+<script>
+  // Autoplay short looping videos only while on screen.
+  (function () {
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    for (const v of document.querySelectorAll('video.auto-video')) {
+      v.muted = true;
+      if (calm) { v.controls = true; continue; }
+      if (!('IntersectionObserver' in window)) { v.play().catch(() => {}); continue; }
+      new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { if (!v.dataset.userPaused) v.play().catch(() => {}); } else v.pause();
+      }, { threshold: 0.35 }).observe(v);
+      v.addEventListener('pause', () => { if (document.visibilityState === 'visible' && v.getBoundingClientRect().top < innerHeight && v.getBoundingClientRect().bottom > 0) v.dataset.userPaused = '1'; });
+      v.addEventListener('play', () => { delete v.dataset.userPaused; });
+    }
+    // YouTube: load the player only when asked.
+    for (const b of document.querySelectorAll('.yt')) {
+      b.addEventListener('click', () => {
+        const f = document.createElement('iframe');
+        f.className = 'yt-frame';
+        f.src = `https://www.youtube-nocookie.com/embed/${b.dataset.yt}?autoplay=1&rel=0`;
+        f.title = b.getAttribute('aria-label').replace('Play the ', '');
+        f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+        f.allowFullscreen = true;
+        b.replaceWith(f);
+      });
+    }
+    // Before/after slider.
+    for (const c of document.querySelectorAll('.compare')) {
+      const r = c.querySelector('input');
+      r.addEventListener('input', () => c.style.setProperty('--pos', r.value + '%'));
+    }
+  })();
+</script>
+</body>
+</html>
