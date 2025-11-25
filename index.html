@@ -609,7 +609,7 @@
 
       <div class="platform-grid">
         <article class="card platform">
-          <video class="platform-photo auto-video" muted loop playsinline preload="metadata" poster="media/turtlebot4-mapping.jpg" width="960" height="540" aria-label="TurtleBot 4 robot next to an animated map that it builds of a room with its lidar"><source src="media/turtlebot4-mapping.mp4" type="video/mp4"></video>
+          <video class="platform-photo auto-video" autoplay muted loop playsinline controls preload="auto" poster="media/turtlebot4-mapping.jpg" width="960" height="540" aria-label="TurtleBot 4 robot next to an animated map that it builds of a room with its lidar"><source src="media/turtlebot4-mapping.mp4" type="video/mp4"></video>
           <div class="platform-copy">
             <p class="place">Ground robot</p>
             <h3>TurtleBot 4</h3>
@@ -778,7 +778,7 @@
             <div class="ms-card">
               <p class="when"><time datetime="2026-09">Sep 2026</time> – now</p>
               <h3>PhD, Mathematical and Computing Science</h3>
-              <p>Institute of Science Tokyo. Advisor: Prof. Katsuki Fujisawa</p>
+              <p>Institute of Science Tokyo, <a href="https://sites.google.com/view/fujisawa-lab-en/home">Fujisawa Lab</a>. Advisor: Prof. Katsuki Fujisawa</p>
             </div>
           </li>
           <li class="ms">
@@ -786,7 +786,7 @@
             <div class="ms-card">
               <p class="when"><time datetime="2025-07">Jul 2025</time> – <time datetime="2026-07">Jul 2026</time></p>
               <h3>Research Associate</h3>
-              <p>Robert Bosch Centre for Cyber-Physical Systems, IISc Bengaluru. Reinforcement learning and resilient control.</p>
+              <p><a href="https://cps.iisc.ac.in/">Robert Bosch Centre for Cyber-Physical Systems</a>, IISc Bengaluru. Reinforcement learning and resilient control.</p>
             </div>
           </li>
           <li class="ms">
@@ -802,7 +802,7 @@
             <div class="ms-card">
               <p class="when"><time datetime="2019">2019</time> – <time datetime="2023">2023</time></p>
               <h3>B.Tech., Computer Science and Engineering</h3>
-              <p>Rajkiya Engineering College, Kannauj</p>
+              <p><a href="https://reck.ac.in/">Rajkiya Engineering College, Kannauj</a></p>
             </div>
           </li>
         </ol>
@@ -1736,7 +1736,7 @@
       if (calm) { v.controls = true; continue; }
       if (!('IntersectionObserver' in window)) { v.play().catch(() => {}); continue; }
       new IntersectionObserver(([e]) => {
-        if (e.isIntersecting) { if (!v.dataset.userPaused) v.play().catch(() => {}); } else v.pause();
+        if (e.isIntersecting) { if (!v.dataset.userPaused) v.play().catch(() => { v.controls = true; }); } else v.pause();
       }, { threshold: 0.35 }).observe(v);
       v.addEventListener('pause', () => { if (document.visibilityState === 'visible' && v.getBoundingClientRect().top < innerHeight && v.getBoundingClientRect().bottom > 0) v.dataset.userPaused = '1'; });
       v.addEventListener('play', () => { delete v.dataset.userPaused; });
