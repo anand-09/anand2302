@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
-<title>Anand Singh: Research experiments</title>
+<title>Anand Singh: IIT Jodhpur · DSC Lab</title>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}html,body{margin:0;background:#fff;font-family:Lato,Arial,sans-serif;color:#3a4658}
@@ -15,6 +15,15 @@ a{color:#2346a8;font-weight:700}
 .m{width:100%;aspect-ratio:16/9;border:0;border-radius:10px;background:#071124;display:block;object-fit:cover}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:8px;aspect-ratio:16/9}
 .two figure{margin:0;position:relative;height:100%}.two img{width:100%;height:100%;border-radius:10px;display:block;background:#4d4d4d}
-.two figcaption{position:absolute;left:8px;top:8px;background:#13233fd9;color:#fff;font:700 11px Lato,Arial;padding:3px 9px;border-radius:99px}
+.two figcaption,.pair figcaption{position:absolute;left:8px;top:8px;display:inline-flex;align-items:center;gap:6px;background:#13233fd9;color:#fff;font:700 11.5px Lato,Arial;padding:3px 10px;border-radius:99px}
+.dark{background:#1b2a45;border-radius:12px;padding:8px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pair figure{margin:0;position:relative}
+.pair video{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:8px;background:#0e1830}
+.dot{width:8px;height:8px;border-radius:50%}.ok{background:#4fd18b}.bad{background:#ff6b5a}
+.tabs{display:flex;gap:6px;margin-top:8px}
+.tabs button{flex:1;min-height:30px;border:1px solid #3c5180;border-radius:7px;background:transparent;color:#c9d4f6;font:700 13px Lato,Arial;cursor:pointer}
+.tabs button:hover{background:#26385c}
+.tabs button[aria-pressed="true"]{background:#e9a92c;border-color:#e9a92c;color:#13233f}
 @media (max-width:640px){.grid{grid-template-columns:1fr}}
-</style></head><body><div class="wrap"><div class="sec">Research experiments</div><div class="grid"><div class="card"><p class="k">IIT Jodhpur · DSC Lab</p><h3>Khepera IV: circling a target</h3><iframe class="m" src="https://www.youtube-nocookie.com/embed/XoNbWddjNvY" title="YouTube video" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe><p>The robot only knows how far it is from the target. Using just that distance, my controller keeps it on a safe circular path (radius 0.75 m, safe range 0.50–1.40 m, speed 0.50 m/s) while overhead cameras track it. This experiment validates my IEEE TAC paper. <a href="https://arxiv.org/abs/2501.08058" target="_blank" rel="noopener">Paper</a></p></div><div class="card"><p class="k">PLOS ONE 2025</p><h3>Clearer medical images</h3><div class="two"><figure><img src="../media/plos-before.png" alt="Before" style="object-fit:contain"><figcaption>Before</figcaption></figure><figure><img src="../media/plos-after.png" alt="After" style="object-fit:contain"><figcaption>After</figcaption></figure></div><p>Dark, low-contrast scans hide small details. Using fractional derivatives, this method sharpens edges and brings out texture in single-channel medical images, so they are easier to read. The original is on the left, the enhanced image on the right. <a href="https://doi.org/10.1371/journal.pone.0319990" target="_blank" rel="noopener">Paper</a></p></div></div></div></body></html>
+</style></head><body><div class="wrap"><div class="sec">IIT Jodhpur · DSC Lab</div><div class="grid"><div class="card"><p class="k">Hardware · Khepera IV</p><h3>Circling a target using only distance</h3><iframe class="m" src="https://www.youtube-nocookie.com/embed/XoNbWddjNvY" title="YouTube video" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe><p>The robot only knows how far it is from the target. Using just that distance, my controller keeps it on a safe circular path (radius 0.75 m, safe range 0.50–1.40 m, speed 0.50 m/s) while overhead cameras track it. This experiment validates my IEEE TAC paper. <a href="https://arxiv.org/abs/2501.08058" target="_blank" rel="noopener">Paper</a></p></div><div class="card"><p class="k">Simulation · ROS 2 and Gazebo</p><h3>A team of robots circling a target</h3><video class="m" src="../media/multi-agent-circumnavigation.mp4" poster="../media/multi-agent-circumnavigation.jpg" autoplay muted loop playsinline controls preload="metadata"></video><p>A leader and two followers circle a target using only distance measurements. They settle into an evenly spaced ring and never cross the inner safety limit or the outer sensing limit, while a super-twisting observer estimates what the robots cannot measure directly.</p></div></div></div></body></html>

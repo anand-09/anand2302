@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
-<title>Anand Singh: Hardware</title>
+<title>Anand Singh: IIT Jodhpur · Robots</title>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}html,body{margin:0;background:#fff;font-family:Lato,Arial,sans-serif;color:#3a4658}
@@ -15,6 +15,15 @@ a{color:#2346a8;font-weight:700}
 .m{width:100%;aspect-ratio:16/9;border:0;border-radius:10px;background:#071124;display:block;object-fit:cover}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:8px;aspect-ratio:16/9}
 .two figure{margin:0;position:relative;height:100%}.two img{width:100%;height:100%;border-radius:10px;display:block;background:#4d4d4d}
-.two figcaption{position:absolute;left:8px;top:8px;background:#13233fd9;color:#fff;font:700 11px Lato,Arial;padding:3px 9px;border-radius:99px}
+.two figcaption,.pair figcaption{position:absolute;left:8px;top:8px;display:inline-flex;align-items:center;gap:6px;background:#13233fd9;color:#fff;font:700 11.5px Lato,Arial;padding:3px 10px;border-radius:99px}
+.dark{background:#1b2a45;border-radius:12px;padding:8px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pair figure{margin:0;position:relative}
+.pair video{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:8px;background:#0e1830}
+.dot{width:8px;height:8px;border-radius:50%}.ok{background:#4fd18b}.bad{background:#ff6b5a}
+.tabs{display:flex;gap:6px;margin-top:8px}
+.tabs button{flex:1;min-height:30px;border:1px solid #3c5180;border-radius:7px;background:transparent;color:#c9d4f6;font:700 13px Lato,Arial;cursor:pointer}
+.tabs button:hover{background:#26385c}
+.tabs button[aria-pressed="true"]{background:#e9a92c;border-color:#e9a92c;color:#13233f}
 @media (max-width:640px){.grid{grid-template-columns:1fr}}
-</style></head><body><div class="wrap"><div class="sec">Hardware</div><div class="grid"><div class="card"><p class="k">Ground robot</p><h3>TurtleBot 4</h3><video class="m" src="../media/turtlebot4-mapping.mp4" poster="../media/turtlebot4-mapping.jpg" autoplay muted loop playsinline controls preload="metadata"></video><p>I set up the TurtleBot 4 during my M.Tech. for indoor mapping and navigation with ROS 2. The video shows how it builds a map of a room with its lidar as it drives, which it then uses to plan safe paths.</p></div><div class="card"><p class="k">Aerial robot</p><h3>Crazyflie 2.1</h3><iframe class="m" src="https://www.youtube-nocookie.com/embed/sdBjfV_qMvQ" title="YouTube video" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe><p>The Crazyflie 2.1 is a small indoor drone that I used for flight control and team flying experiments. Its light weight makes it safe to test new controllers indoors, close to people and other robots.</p></div></div></div></body></html>
+</style></head><body><div class="wrap"><div class="sec">IIT Jodhpur · Robots</div><div class="grid"><div class="card"><p class="k">Ground robot</p><h3>TurtleBot 4</h3><video class="m" src="../media/turtlebot4-mapping.mp4" poster="../media/turtlebot4-mapping.jpg" autoplay muted loop playsinline controls preload="metadata"></video><p>I set up the TurtleBot 4 during my M.Tech. for indoor mapping and navigation with ROS 2. The video shows how it builds a map of a room with its lidar as it drives, which it then uses to plan safe paths.</p></div><div class="card"><p class="k">Aerial robot</p><h3>Crazyflie 2.1</h3><iframe class="m" src="https://www.youtube-nocookie.com/embed/sdBjfV_qMvQ" title="YouTube video" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe><p>The Crazyflie 2.1 is a small indoor drone that I used for flight control and team flying experiments. Its light weight makes it safe to test new controllers indoors, close to people and other robots.</p></div></div></div></body></html>
